@@ -14,10 +14,10 @@ public class ColisSearchCriteria {
     private String keyword;
     private StatutColis statut;
     private PrioriteColis priorite;
-    private Long zoneId;
+    private String zoneId;
     private String ville;
-    private Long livreurId;
-    private Long clientExpediteurId;
+    private String livreurId;
+    private String clientExpediteurId;
     private LocalDateTime dateDebut;
     private LocalDateTime dateFin;
 }

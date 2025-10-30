@@ -28,11 +28,11 @@ public class ColisCreateDTO {
     private String villeDestination;
 
     @NotNull(message = "Le client expéditeur est obligatoire")
-    private Long clientExpediteurId;
+    private String clientExpediteurId;
 
     @NotNull(message = "Le destinataire est obligatoire")
-    private Long destinataireId;
+    private String destinataireId;
 
     @NotNull(message = "La zone est obligatoire")
-    private Long zoneId;
+    private String zoneId;
 }

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HistoriqueLivraisonDTO {
-    private Long id;
+    private String id;
 
     @NotNull(message = "Le statut est obligatoire")
     private StatutColis statut;
