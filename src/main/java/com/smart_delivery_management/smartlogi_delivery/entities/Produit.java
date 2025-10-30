@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -12,9 +14,12 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Produit {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "uuid") // Générateur UUID
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false, unique = true, length = 36)
+    private String id;
 
     @Column(nullable = false, length = 200)
     private String nom;
@@ -28,4 +33,3 @@ public class Produit {
     @Column(precision = 10, scale = 2)
     private BigDecimal prix;
 }
-

@@ -1,27 +1,37 @@
 package com.smart_delivery_management.smartlogi_delivery.entities;
 
+import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteColis;
+import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "colis", indexes = {
-        @Index(name = "idx_colis_statut", columnList = "statut"),
-        @Index(name = "idx_colis_priorite", columnList = "priorite"),
-        @Index(name = "idx_colis_ville", columnList = "ville_destination")
-})
+@Table(
+        name = "colis",
+        indexes = {
+                @Index(name = "idx_colis_statut", columnList = "statut"),
+                @Index(name = "idx_colis_priorite", columnList = "priorite"),
+                @Index(name = "idx_colis_ville", columnList = "ville_destination")
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Colis {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false, unique = true, length = 36)
+    private String id;
 
     @Column(columnDefinition = "TEXT")
     private String description;

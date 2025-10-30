@@ -1,4 +1,4 @@
-package com.smart_delivery_management.smartlogi_delivery.entities;
+package com.smart_delivery_management.smartlogi_delivery.entities.enums;
 
 public enum PrioriteColis {
     NORMALE("Normale"),
