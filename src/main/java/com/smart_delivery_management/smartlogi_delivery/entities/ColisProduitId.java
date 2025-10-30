@@ -13,8 +13,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ColisProduitId implements Serializable {
     @Column(name = "colis_id")
-    private Long colisId;
+    private String colisId;
 
     @Column(name = "produit_id")
-    private Long produitId;
+    private String produitId;
 }

@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 public class Produit {
 
     @Id
-    @GeneratedValue(generator = "uuid") // Générateur UUID
+    @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true, length = 36)
     private String id;

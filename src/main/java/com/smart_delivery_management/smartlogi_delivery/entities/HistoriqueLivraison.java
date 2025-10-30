@@ -24,11 +24,11 @@ public class HistoriqueLivraison {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true, length = 36)
-    private String id; // UUID stocké en String
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "colis_id", nullable = false)
-    private Colis colis; // relation vers Colis (UUID String)
+    private Colis colis;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
