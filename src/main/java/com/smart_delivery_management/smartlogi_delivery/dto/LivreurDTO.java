@@ -27,6 +27,6 @@ public class LivreurDTO {
     @Size(max = 50)
     private String vehicule;
 
-    private Long zoneAssigneeId;
+    private String zoneAssigneeId;
     private String zoneAssigneeNom;
 }

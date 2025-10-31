@@ -37,7 +37,7 @@ public class ColisDTO {
 
     private LocalDateTime dateCreation;
 
-    private Long livreurId;
+    private String livreurId;
     private String livreurNom;
 
     @NotNull(message = "Le client expéditeur est obligatoire")
@@ -45,7 +45,7 @@ public class ColisDTO {
     private String clientExpediteurNom;
 
     @NotNull(message = "Le destinataire est obligatoire")
-    private Long destinataireId;
+    private String destinataireId;
     private String destinataireNom;
 
     @NotNull(message = "La zone est obligatoire")
