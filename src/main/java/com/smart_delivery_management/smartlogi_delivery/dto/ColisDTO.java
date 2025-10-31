@@ -41,7 +41,7 @@ public class ColisDTO {
     private String livreurNom;
 
     @NotNull(message = "Le client expéditeur est obligatoire")
-    private Long clientExpediteurId;
+    private String clientExpediteurId;
     private String clientExpediteurNom;
 
     @NotNull(message = "Le destinataire est obligatoire")
@@ -49,7 +49,7 @@ public class ColisDTO {
     private String destinataireNom;
 
     @NotNull(message = "La zone est obligatoire")
-    private Long zoneId;
+    private String zoneId;
     private String zoneNom;
 
     private List<ColisProduitDTO> produits;
