@@ -14,7 +14,6 @@ import java.io.Serializable;
 public class ColisProduitId implements Serializable {
     @Column(name = "colis_id")
     private String colisId;
-
     @Column(name = "produit_id")
     private String produitId;
 }
