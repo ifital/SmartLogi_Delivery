@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-create-colis-produit
+      author: smartlogi
+      changes:
+        - createTable:
+            tableName: colis_produit
+            columns:
+              - column:
+                  name: colis_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: produit_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantite
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: prix
+                  type: decimal(10,2)
+              - column:
+                  name: date_ajout
+                  type: timestamp
+
+        - addPrimaryKey:
+            tableName: colis_produit
+            columnNames: colis_id, produit_id
+            constraintName: pk_colis_produit
+
+        - addForeignKeyConstraint:
+            baseTableName: colis_produit
+            baseColumnNames: colis_id
+            constraintName: fk_colis_produit_colis
+            referencedTableName: colis
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: colis_produit
+            baseColumnNames: produit_id
+            constraintName: fk_colis_produit_produit
+            referencedTableName: produit
+            referencedColumnNames: id
+            onDelete: CASCADE

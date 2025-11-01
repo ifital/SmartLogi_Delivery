@@ -1,0 +1,111 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-colis
+      author: smartlogi
+      changes:
+        - createTable:
+            tableName: colis
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: poids
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: statut
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priorite
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ville_destination
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_creation
+                  type: timestamp
+              - column:
+                  name: livreur_id
+                  type: varchar(36)
+              - column:
+                  name: client_expediteur_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: destinataire_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: zone_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: colis
+            baseColumnNames: livreur_id
+            constraintName: fk_colis_livreur
+            referencedTableName: livreur
+            referencedColumnNames: id
+            onDelete: SET NULL
+
+        - addForeignKeyConstraint:
+            baseTableName: colis
+            baseColumnNames: client_expediteur_id
+            constraintName: fk_colis_client_expediteur
+            referencedTableName: client_expediteur
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: colis
+            baseColumnNames: destinataire_id
+            constraintName: fk_colis_destinataire
+            referencedTableName: destinataire
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            baseTableName: colis
+            baseColumnNames: zone_id
+            constraintName: fk_colis_zone
+            referencedTableName: zone
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        - createIndex:
+            indexName: idx_colis_statut
+            tableName: colis
+            columns:
+              - column:
+                  name: statut
+
+        - createIndex:
+            indexName: idx_colis_priorite
+            tableName: colis
+            columns:
+              - column:
+                  name: priorite
+
+        - createIndex:
+            indexName: idx_colis_ville
+            tableName: colis
+            columns:
+              - column:
+                  name: ville_destination

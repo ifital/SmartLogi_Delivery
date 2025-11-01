@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-livreur
+      author: smartlogi
+      changes:
+        - createTable:
+            tableName: livreur
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nom
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: prenom
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: telephone
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: vehicule
+                  type: varchar(50)
+              - column:
+                  name: zone_assignee_id
+                  type: varchar(36)
+        - addForeignKeyConstraint:
+            baseTableName: livreur
+            baseColumnNames: zone_assignee_id
+            constraintName: fk_livreur_zone
+            referencedTableName: zone
+            referencedColumnNames: id
+            onDelete: SET NULL

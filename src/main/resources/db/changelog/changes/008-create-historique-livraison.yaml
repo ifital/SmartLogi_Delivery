@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-create-historique-livraison
+      author: smartlogi
+      changes:
+        - createTable:
+            tableName: historique_livraison
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: colis_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: statut
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_changement
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: commentaire
+                  type: text
+
+        - addForeignKeyConstraint:
+            baseTableName: historique_livraison
+            baseColumnNames: colis_id
+            constraintName: fk_historique_colis
+            referencedTableName: colis
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            indexName: idx_historique_colis
+            tableName: historique_livraison
+            columns:
+              - column:
+                  name: colis_id
