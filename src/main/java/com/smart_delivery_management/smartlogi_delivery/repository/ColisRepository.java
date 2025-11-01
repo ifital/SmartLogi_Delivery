@@ -58,13 +58,13 @@ public interface ColisRepository extends JpaRepository<Colis, String>, JpaSpecif
 
     // Statistiques
     @Query("SELECT COUNT(c) FROM Colis c WHERE c.livreur.id = :livreurId")
-    String countByLivreurId(@Param("livreurId") String livreurId);
+    Long countByLivreurId(@Param("livreurId") String livreurId);
 
     @Query("SELECT SUM(c.poids) FROM Colis c WHERE c.livreur.id = :livreurId")
     BigDecimal sumPoidsByLivreurId(@Param("livreurId") String livreurId);
 
     @Query("SELECT COUNT(c) FROM Colis c WHERE c.zone.id = :zoneId")
-    String countByZoneId(@Param("zoneId") String zoneId);
+    Long countByZoneId(@Param("zoneId") String zoneId);
 
     @Query("SELECT SUM(c.poids) FROM Colis c WHERE c.zone.id = :zoneId")
     BigDecimal sumPoidsByZoneId(@Param("zoneId") String zoneId);
