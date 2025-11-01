@@ -7,10 +7,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LivreurRepository extends JpaRepository<Livreur, Long> {
+public interface LivreurRepository extends JpaRepository<Livreur, String> {
     List<Livreur> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
-    List<Livreur> findByZoneAssigneeId(Long zoneId);
+    List<Livreur> findByZoneAssigneeId(String zoneId);
 
     @Query("SELECT l FROM Livreur l WHERE l.zoneAssignee.id = :zoneId")
-    List<Livreur> findLivreursByZone(Long zoneId);
+    List<Livreur> findLivreursByZone(String zoneId);
 }

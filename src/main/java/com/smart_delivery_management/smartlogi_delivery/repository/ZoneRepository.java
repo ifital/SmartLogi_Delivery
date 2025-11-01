@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ZoneRepository extends JpaRepository<Zone, Long> {
+public interface ZoneRepository extends JpaRepository<Zone, String> {
     List<Zone> findByNomContainingIgnoreCase(String nom);
     List<Zone> findByCodePostal(String codePostal);
 }

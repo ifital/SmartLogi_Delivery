@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DestinataireRepository extends JpaRepository<Destinataire, Long> {
+public interface DestinataireRepository extends JpaRepository<Destinataire, String> {
     List<Destinataire> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
     List<Destinataire> findByTelephone(String telephone);
 }

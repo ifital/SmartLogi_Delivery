@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ColisProduitRepository extends JpaRepository<ColisProduit, ColisProduitId> {
-    List<ColisProduit> findByColisId(Long colisId);
-    List<ColisProduit> findByProduitId(Long produitId);
-    void deleteByColisId(Long colisId);
+    List<ColisProduit> findByColisId(String colisId);
+    List<ColisProduit> findByProduitId(String produitId);
+    void deleteByColisId(String colisId);
 }

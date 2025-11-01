@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface ColisRepository extends JpaRepository<Colis, Long>, JpaSpecificationExecutor<Colis> {
+public interface ColisRepository extends JpaRepository<Colis, String>, JpaSpecificationExecutor<Colis> {
 
     // Recherche par statut
     Page<Colis> findByStatut(StatutColis statut, Pageable pageable);
@@ -24,21 +24,21 @@ public interface ColisRepository extends JpaRepository<Colis, Long>, JpaSpecific
     Page<Colis> findByPriorite(PrioriteColis priorite, Pageable pageable);
 
     // Recherche par zone
-    Page<Colis> findByZoneId(Long zoneId, Pageable pageable);
+    Page<Colis> findByZoneId(String zoneId, Pageable pageable);
 
     // Recherche par ville
     Page<Colis> findByVilleDestinationContainingIgnoreCase(String ville, Pageable pageable);
 
     // Recherche par livreur
-    Page<Colis> findByLivreurId(Long livreurId, Pageable pageable);
-    List<Colis> findByLivreurId(Long livreurId);
+    Page<Colis> findByLivreurId(String livreurId, Pageable pageable);
+    List<Colis> findByLivreurId(String livreurId);
 
     // Recherche par client expéditeur
-    Page<Colis> findByClientExpediteurId(Long clientId, Pageable pageable);
-    List<Colis> findByClientExpediteurId(Long clientId);
+    Page<Colis> findByClientExpediteurId(String clientId, Pageable pageable);
+    List<Colis> findByClientExpediteurId(String clientId);
 
     // Recherche par destinataire
-    List<Colis> findByDestinataireId(Long destinataireId);
+    List<Colis> findByDestinataireId(String destinataireId);
 
     // Recherche combinée
     @Query("SELECT c FROM Colis c WHERE " +
@@ -50,24 +50,24 @@ public interface ColisRepository extends JpaRepository<Colis, Long>, JpaSpecific
     Page<Colis> searchColis(
             @Param("statut") StatutColis statut,
             @Param("priorite") PrioriteColis priorite,
-            @Param("zoneId") Long zoneId,
-            @Param("livreurId") Long livreurId,
+            @Param("zoneId") String zoneId,
+            @Param("livreurId") String livreurId,
             @Param("ville") String ville,
             Pageable pageable
     );
 
     // Statistiques
     @Query("SELECT COUNT(c) FROM Colis c WHERE c.livreur.id = :livreurId")
-    Long countByLivreurId(@Param("livreurId") Long livreurId);
+    String countByLivreurId(@Param("livreurId") String livreurId);
 
     @Query("SELECT SUM(c.poids) FROM Colis c WHERE c.livreur.id = :livreurId")
-    BigDecimal sumPoidsByLivreurId(@Param("livreurId") Long livreurId);
+    BigDecimal sumPoidsByLivreurId(@Param("livreurId") String livreurId);
 
     @Query("SELECT COUNT(c) FROM Colis c WHERE c.zone.id = :zoneId")
-    Long countByZoneId(@Param("zoneId") Long zoneId);
+    String countByZoneId(@Param("zoneId") String zoneId);
 
     @Query("SELECT SUM(c.poids) FROM Colis c WHERE c.zone.id = :zoneId")
-    BigDecimal sumPoidsByZoneId(@Param("zoneId") Long zoneId);
+    BigDecimal sumPoidsByZoneId(@Param("zoneId") String zoneId);
 
     // Colis en retard (exemple: en transit depuis plus de 3 jours)
     @Query("SELECT c FROM Colis c WHERE c.statut = 'EN_TRANSIT' AND c.dateCreation < :dateLimit")
