@@ -1,6 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.service;
 
 import com.smart_delivery_management.smartlogi_delivery.dto.*;
+import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteColis;
 import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +41,20 @@ public interface ColisService {
     List<ColisDTO> getColisEnRetard();
 
     List<ColisDTO> getColisPrioritairesNonAssignes();
+
+    List<Object[]> countByStatutGroupBy();
+
+    List<Object[]> countByZoneGroupBy();
+
+    List<Object[]> countByPrioriteGroupBy();
+
+    Page<ColisDTO> getColisByStatut(StatutColis statut, Pageable pageable);
+
+    Page<ColisDTO> getColisByPriorite(PrioriteColis priorite, Pageable pageable);
+
+    Page<ColisDTO> getColisByZone(String zoneId, Pageable pageable);
+
+    Page<ColisDTO> getColisByVille(String ville, Pageable pageable);
+
+    Page<ColisDTO> getColisByLivreur(String livreurId, Pageable pageable);
 }
