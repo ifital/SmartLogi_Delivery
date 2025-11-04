@@ -5,10 +5,11 @@ import com.smart_delivery_management.smartlogi_delivery.repository.ZoneRepositor
 import com.smart_delivery_management.smartlogi_delivery.service.ZoneService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,16 +22,14 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public Zone save(Zone zone) {
-        log.info("Enregistrement d'une zone: nom={}, codePostal={}",
-                zone.getNom(), zone.getCodePostal());
+        log.info("Enregistrement d'une zone: nom={}, codePostal={}", zone.getNom(), zone.getCodePostal());
         try {
             Zone saved = zoneRepository.save(zone);
             log.info("Zone enregistrée avec succès: id={}, nom={}, codePostal={}",
                     saved.getId(), saved.getNom(), saved.getCodePostal());
             return saved;
         } catch (Exception e) {
-            log.error("Erreur lors de l'enregistrement de la zone: nom={}, codePostal={}",
-                    zone.getNom(), zone.getCodePostal(), e);
+            log.error("Erreur lors de l'enregistrement de la zone: {}", e.getMessage(), e);
             throw e;
         }
     }
@@ -39,40 +38,33 @@ public class ZoneServiceImpl implements ZoneService {
     @Transactional(readOnly = true)
     public Optional<Zone> findById(String id) {
         log.debug("Recherche de la zone par ID: {}", id);
-        Optional<Zone> result = zoneRepository.findById(id);
-        if (result.isPresent()) {
-            log.debug("Zone trouvée: id={}, nom={}, codePostal={}",
-                    id, result.get().getNom(), result.get().getCodePostal());
-        } else {
-            log.debug("Zone non trouvée avec l'ID: {}", id);
-        }
+        return zoneRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Zone> findAll(Pageable pageable) {
+        log.debug("Récupération paginée de toutes les zones");
+        Page<Zone> result = zoneRepository.findAll(pageable);
+        log.info("Nombre de zones récupérées (page {}): {}", pageable.getPageNumber(), result.getNumberOfElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Zone> findAll() {
-        log.debug("Récupération de toutes les zones");
-        List<Zone> result = zoneRepository.findAll();
-        log.info("Nombre total de zones récupérées: {}", result.size());
+    public Page<Zone> searchByNom(String nom, Pageable pageable) {
+        log.debug("Recherche de zones par nom (paginée): {}", nom);
+        Page<Zone> result = zoneRepository.findByNomContainingIgnoreCase(nom, pageable);
+        log.info("Zones trouvées contenant '{}': {}", nom, result.getTotalElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Zone> searchByNom(String nom) {
-        log.debug("Recherche de zones par nom: {}", nom);
-        List<Zone> result = zoneRepository.findByNomContainingIgnoreCase(nom);
-        log.info("Nombre de zones trouvées avec le nom contenant '{}': {}", nom, result.size());
-        return result;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Zone> findByCodePostal(String codePostal) {
-        log.debug("Recherche de zones par code postal: {}", codePostal);
-        List<Zone> result = zoneRepository.findByCodePostal(codePostal);
-        log.info("Nombre de zones trouvées avec le code postal '{}': {}", codePostal, result.size());
+    public Page<Zone> findByCodePostal(String codePostal, Pageable pageable) {
+        log.debug("Recherche de zones par code postal (paginée): {}", codePostal);
+        Page<Zone> result = zoneRepository.findByCodePostal(codePostal, pageable);
+        log.info("Zones trouvées avec le code postal '{}': {}", codePostal, result.getTotalElements());
         return result;
     }
 
@@ -81,11 +73,6 @@ public class ZoneServiceImpl implements ZoneService {
     public void deleteById(String id) {
         log.info("Suppression de la zone: {}", id);
         try {
-            Optional<Zone> zone = zoneRepository.findById(id);
-            if (zone.isPresent()) {
-                log.info("Suppression de la zone: nom={}, codePostal={}",
-                        zone.get().getNom(), zone.get().getCodePostal());
-            }
             zoneRepository.deleteById(id);
             log.info("Zone supprimée avec succès: {}", id);
         } catch (Exception e) {
@@ -98,8 +85,6 @@ public class ZoneServiceImpl implements ZoneService {
     @Transactional(readOnly = true)
     public boolean existsById(String id) {
         log.debug("Vérification de l'existence de la zone: {}", id);
-        boolean exists = zoneRepository.existsById(id);
-        log.debug("Zone existe: {}", exists);
-        return exists;
+        return zoneRepository.existsById(id);
     }
 }

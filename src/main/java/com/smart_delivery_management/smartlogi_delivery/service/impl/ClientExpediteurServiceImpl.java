@@ -13,8 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,31 +76,25 @@ public class ClientExpediteurServiceImpl implements ClientExpediteurService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ClientExpediteurDTO> search(String keyword) {
-        log.debug("Recherche de clients avec le mot-clé: {}", keyword);
+    public Page<ClientExpediteurDTO> search(String keyword, Pageable pageable) {
+        log.debug("Recherche paginée de clients avec le mot-clé: {}", keyword);
 
-        // Recherche par nom/prénom
-        List<ClientExpediteurDTO> results = repository
-                .findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(keyword, keyword)
-                .stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
+        // Recherche par nom ou prénom
+        Page<ClientExpediteur> pageResult =
+                repository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(keyword, keyword, pageable);
 
-        // Recherche par email
-        repository.findByEmail(keyword).ifPresent(client -> {
-            ClientExpediteurDTO dto = mapper.toDto(client);
-            if (!results.contains(dto)) results.add(dto);
-        });
-
-        // Recherche par téléphone
-        List<ClientExpediteurDTO> byPhone = repository.findByTelephone(keyword)
-                .stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
-        for (ClientExpediteurDTO dto : byPhone) {
-            if (!results.contains(dto)) results.add(dto);
+        // Si aucun résultat, on tente la recherche par téléphone
+        if (pageResult.isEmpty()) {
+            pageResult = repository.findByTelephone(keyword, pageable);
         }
 
-        return results;
+        // Si toujours aucun résultat, on tente par email
+        if (pageResult.isEmpty()) {
+            repository.findByEmail(keyword).ifPresent(client -> {
+                log.debug("Client trouvé par email: {}", client.getEmail());
+            });
+        }
+
+        return pageResult.map(mapper::toDto);
     }
 }

@@ -163,14 +163,21 @@ public class ColisServiceImpl implements ColisService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoriqueLivraisonDTO> getHistorique(String colisId) {
-        if (!colisRepository.existsById(colisId)) throw new ResourceNotFoundException("Colis introuvable");
+    public Page<HistoriqueLivraisonDTO> getHistorique(String colisId, Pageable pageable) {
+        if (!colisRepository.existsById(colisId)) {
+            throw new ResourceNotFoundException("Colis introuvable");
+        }
 
-        return historiqueRepository.findByColisIdOrderByDateChangementDesc(colisId)
-                .stream()
-                .map(h -> new HistoriqueLivraisonDTO(h.getId(), h.getStatut(), h.getDateChangement(), h.getCommentaire()))
-                .collect(Collectors.toList());
+        return historiqueRepository
+                .findByColisIdOrderByDateChangementDesc(colisId, pageable)
+                .map(h -> new HistoriqueLivraisonDTO(
+                        h.getId(),
+                        h.getStatut(),
+                        h.getDateChangement(),
+                        h.getCommentaire()
+                ));
     }
+
 
     @Override
     @Transactional(readOnly = true)

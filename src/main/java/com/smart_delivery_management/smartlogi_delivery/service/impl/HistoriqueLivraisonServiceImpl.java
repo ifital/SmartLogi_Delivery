@@ -6,10 +6,11 @@ import com.smart_delivery_management.smartlogi_delivery.repository.HistoriqueLiv
 import com.smart_delivery_management.smartlogi_delivery.service.HistoriqueLivraisonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,32 +53,32 @@ public class HistoriqueLivraisonServiceImpl implements HistoriqueLivraisonServic
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoriqueLivraison> findAll() {
+    public Page<HistoriqueLivraison> findAll(Pageable  pageable) {
         log.debug("Récupération de tous les historiques de livraison");
-        List<HistoriqueLivraison> result = historiqueLivraisonRepository.findAll();
-        log.info("Nombre total d'historiques de livraison récupérés: {}", result.size());
+        Page<HistoriqueLivraison> result = historiqueLivraisonRepository.findAll(pageable);
+        log.info("Nombre total d'historiques de livraison récupérés: {}", result.getTotalElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoriqueLivraison> findByColisIdOrderByDateDesc(String colisId) {
+    public Page<HistoriqueLivraison> findByColisIdOrderByDateDesc(String colisId, Pageable pageable) {
         log.debug("Recherche de l'historique pour le colis: {}", colisId);
-        List<HistoriqueLivraison> result = historiqueLivraisonRepository
-                .findByColisIdOrderByDateChangementDesc(colisId);
-        log.info("Nombre d'entrées d'historique trouvées pour le colis {}: {}", colisId, result.size());
+        Page<HistoriqueLivraison> result = historiqueLivraisonRepository
+                .findByColisIdOrderByDateChangementDesc(colisId,  pageable);
+        log.info("Nombre d'entrées d'historique trouvées pour le colis {}: {}", colisId, result.getTotalElements());
         if (!result.isEmpty()) {
-            log.debug("Dernier statut du colis {}: {}", colisId, result.get(0).getStatut());
+            log.debug("Dernier statut du colis {}: {}", colisId, result.getContent().get(0).getStatut());
         }
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoriqueLivraison> findByStatut(StatutColis statut) {
+    public Page<HistoriqueLivraison> findByStatut(StatutColis statut, Pageable pageable) {
         log.debug("Recherche des historiques par statut: {}", statut);
-        List<HistoriqueLivraison> result = historiqueLivraisonRepository.findByStatut(statut);
-        log.info("Nombre d'historiques trouvés avec le statut '{}': {}", statut, result.size());
+        Page<HistoriqueLivraison> result = historiqueLivraisonRepository.findByStatut(statut, pageable);
+        log.info("Nombre d'historiques trouvés avec le statut '{}': {}", statut, result.getTotalElements());
         return result;
     }
 

@@ -18,5 +18,5 @@ public interface ClientExpediteurService {
 
     void delete(String id);
 
-    List<ClientExpediteurDTO> search(String keyword);
+    Page<ClientExpediteurDTO> search(String keyword, Pageable pageable);
 }

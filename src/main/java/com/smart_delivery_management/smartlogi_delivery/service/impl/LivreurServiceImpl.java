@@ -5,10 +5,11 @@ import com.smart_delivery_management.smartlogi_delivery.repository.LivreurReposi
 import com.smart_delivery_management.smartlogi_delivery.service.LivreurService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,13 +25,12 @@ public class LivreurServiceImpl implements LivreurService {
         log.info("Enregistrement d'un livreur: {} {}", livreur.getNom(), livreur.getPrenom());
         try {
             Livreur saved = livreurRepository.save(livreur);
-            log.info("Livreur enregistré avec succès: id={}, nom={} {}, zone={}",
+            log.info("Livreur enregistré: id={}, nom={} {}, zone={}",
                     saved.getId(), saved.getNom(), saved.getPrenom(),
                     saved.getZoneAssignee() != null ? saved.getZoneAssignee().getNom() : "Non assignée");
             return saved;
         } catch (Exception e) {
-            log.error("Erreur lors de l'enregistrement du livreur: {} {}",
-                    livreur.getNom(), livreur.getPrenom(), e);
+            log.error("Erreur lors de l'enregistrement du livreur: {} {}", livreur.getNom(), livreur.getPrenom(), e);
             throw e;
         }
     }
@@ -39,50 +39,42 @@ public class LivreurServiceImpl implements LivreurService {
     @Transactional(readOnly = true)
     public Optional<Livreur> findById(String id) {
         log.debug("Recherche du livreur par ID: {}", id);
-        Optional<Livreur> result = livreurRepository.findById(id);
-        if (result.isPresent()) {
-            log.debug("Livreur trouvé: id={}, nom={} {}",
-                    id, result.get().getNom(), result.get().getPrenom());
-        } else {
-            log.debug("Livreur non trouvé avec l'ID: {}", id);
-        }
+        return livreurRepository.findById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Livreur> findAll(Pageable pageable) {
+        log.debug("Récupération paginée de tous les livreurs");
+        Page<Livreur> result = livreurRepository.findAll(pageable);
+        log.info("Page {} - Livreurs récupérés: {}", pageable.getPageNumber(), result.getNumberOfElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Livreur> findAll() {
-        log.debug("Récupération de tous les livreurs");
-        List<Livreur> result = livreurRepository.findAll();
-        log.info("Nombre total de livreurs récupérés: {}", result.size());
+    public Page<Livreur> searchByNomOrPrenom(String nom, String prenom, Pageable pageable) {
+        log.debug("Recherche paginée de livreurs par nom/prénom: {}, {}", nom, prenom);
+        Page<Livreur> result = livreurRepository.findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(nom, prenom, pageable);
+        log.info("Livreurs trouvés (nom/prénom) '{}', '{}': {}", nom, prenom, result.getTotalElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Livreur> searchByNomOrPrenom(String nom, String prenom) {
-        log.debug("Recherche de livreurs par nom ou prénom: nom={}, prenom={}", nom, prenom);
-        List<Livreur> result = livreurRepository
-                .findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(nom, prenom);
-        log.info("Nombre de livreurs trouvés avec nom/prénom '{}' ou '{}': {}", nom, prenom, result.size());
+    public Page<Livreur> findByZoneAssigneeId(String zoneId, Pageable pageable) {
+        log.debug("Recherche paginée des livreurs assignés à la zone: {}", zoneId);
+        Page<Livreur> result = livreurRepository.findByZoneAssigneeId(zoneId, pageable);
+        log.info("Livreurs trouvés pour la zone {}: {}", zoneId, result.getTotalElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Livreur> findByZoneAssigneeId(String zoneId) {
-        log.debug("Recherche des livreurs assignés à la zone: {}", zoneId);
-        List<Livreur> result = livreurRepository.findByZoneAssigneeId(zoneId);
-        log.info("Nombre de livreurs trouvés pour la zone {}: {}", zoneId, result.size());
-        return result;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Livreur> findLivreursByZone(String zoneId) {
-        log.debug("Recherche des livreurs de la zone (méthode personnalisée): {}", zoneId);
-        List<Livreur> result = livreurRepository.findLivreursByZone(zoneId);
-        log.info("Nombre de livreurs récupérés pour la zone {}: {}", zoneId, result.size());
+    public Page<Livreur> findLivreursByZone(String zoneId, Pageable pageable) {
+        log.debug("Recherche paginée des livreurs de la zone (requête personnalisée): {}", zoneId);
+        Page<Livreur> result = livreurRepository.findLivreursByZone(zoneId, pageable);
+        log.info("Livreurs récupérés pour la zone {}: {}", zoneId, result.getTotalElements());
         return result;
     }
 
@@ -91,11 +83,6 @@ public class LivreurServiceImpl implements LivreurService {
     public void deleteById(String id) {
         log.info("Suppression du livreur: {}", id);
         try {
-            Optional<Livreur> livreur = livreurRepository.findById(id);
-            if (livreur.isPresent()) {
-                log.info("Suppression du livreur: {} {}",
-                        livreur.get().getNom(), livreur.get().getPrenom());
-            }
             livreurRepository.deleteById(id);
             log.info("Livreur supprimé avec succès: {}", id);
         } catch (Exception e) {
@@ -107,9 +94,7 @@ public class LivreurServiceImpl implements LivreurService {
     @Override
     @Transactional(readOnly = true)
     public boolean existsById(String id) {
-        log.debug("Vérification de l'existence du livreur: {}", id);
-        boolean exists = livreurRepository.existsById(id);
-        log.debug("Livreur existe: {}", exists);
-        return exists;
+        log.debug("Vérification existence livreur: {}", id);
+        return livreurRepository.existsById(id);
     }
 }

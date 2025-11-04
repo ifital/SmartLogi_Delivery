@@ -6,6 +6,8 @@ import com.smart_delivery_management.smartlogi_delivery.repository.ColisProduitR
 import com.smart_delivery_management.smartlogi_delivery.service.ColisProduitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,30 +56,31 @@ public class ColisProduitServiceImpl implements ColisProduitService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ColisProduit> findAll() {
+    public Page<ColisProduit> findAll(Pageable pageable) {
         log.debug("Récupération de toutes les associations colis-produit");
-        List<ColisProduit> result = colisProduitRepository.findAll();
-        log.info("Nombre total d'associations colis-produit récupérées: {}", result.size());
+        Page<ColisProduit> result = colisProduitRepository.findAll(pageable);
+        log.info("Nombre total d'associations colis-produit récupérées: {}", result.getTotalElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ColisProduit> findByColisId(String colisId) {
-        log.debug("Recherche des produits pour le colis: {}", colisId);
-        List<ColisProduit> result = colisProduitRepository.findByColisId(colisId);
-        log.info("Nombre de produits trouvés pour le colis {}: {}", colisId, result.size());
+    public Page<ColisProduit> findByColisId(String colisId, Pageable pageable) {
+        log.debug("Recherche paginée des produits pour le colis: {}", colisId);
+        Page<ColisProduit> result = colisProduitRepository.findByColisId(colisId, pageable);
+        log.info("Nombre de produits trouvés pour le colis {}: {}", colisId, result.getTotalElements());
         return result;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ColisProduit> findByProduitId(String produitId) {
-        log.debug("Recherche des colis contenant le produit: {}", produitId);
-        List<ColisProduit> result = colisProduitRepository.findByProduitId(produitId);
-        log.info("Nombre de colis trouvés contenant le produit {}: {}", produitId, result.size());
+    public Page<ColisProduit> findByProduitId(String produitId, Pageable pageable) {
+        log.debug("Recherche paginée des colis contenant le produit: {}", produitId);
+        Page<ColisProduit> result = colisProduitRepository.findByProduitId(produitId, pageable);
+        log.info("Nombre de colis trouvés contenant le produit {}: {}", produitId, result.getTotalElements());
         return result;
     }
+
 
     @Override
     @Transactional

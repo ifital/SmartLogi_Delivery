@@ -34,7 +34,7 @@ public interface ColisService {
 
     List<ColisDTO> getColisByDestinataire(String destinataireId);
 
-    List<HistoriqueLivraisonDTO> getHistorique(String colisId);
+    Page<HistoriqueLivraisonDTO> getHistorique(String colisId, Pageable pageable);
 
     ColisStatisticsDTO getStatisticsByLivreur(String livreurId);
 
