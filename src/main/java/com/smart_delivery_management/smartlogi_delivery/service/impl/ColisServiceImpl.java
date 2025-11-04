@@ -149,10 +149,10 @@ public class ColisServiceImpl implements ColisService {
         return colisRepository.findByLivreurId(livreurId).stream().map(colisMapper::toDto).collect(Collectors.toList());
     }
 
-    @Override
     @Transactional(readOnly = true)
-    public List<ColisDTO> getColisByClient(String clientId) {
-        return colisRepository.findByClientExpediteurId(clientId).stream().map(colisMapper::toDto).collect(Collectors.toList());
+    @Override
+    public Page<ColisDTO> getColisByClient(String clientId, Pageable pageable) {
+        return colisRepository.findByClientExpediteurId(clientId, pageable).map(colisMapper::toDto);
     }
 
     @Override
