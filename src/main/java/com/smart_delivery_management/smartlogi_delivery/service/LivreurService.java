@@ -1,17 +1,16 @@
 package com.smart_delivery_management.smartlogi_delivery.service;
 
-import com.smart_delivery_management.smartlogi_delivery.dto.LivreurDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import com.smart_delivery_management.smartlogi_delivery.entities.Livreur;
 import java.util.List;
+import java.util.Optional;
 
 public interface LivreurService {
-    LivreurDTO create(LivreurDTO dto);
-    LivreurDTO getById(String id);
-    Page<LivreurDTO> getAll(Pageable pageable);
-    LivreurDTO update(String id, LivreurDTO dto);
-    void delete(String id);
-    List<LivreurDTO> search(String keyword);
-    List<LivreurDTO> getByZone(String zoneId);
+    Livreur save(Livreur livreur);
+    Optional<Livreur> findById(String id);
+    List<Livreur> findAll();
+    List<Livreur> searchByNomOrPrenom(String nom, String prenom);
+    List<Livreur> findByZoneAssigneeId(String zoneId);
+    List<Livreur> findLivreursByZone(String zoneId);
+    void deleteById(String id);
+    boolean existsById(String id);
 }

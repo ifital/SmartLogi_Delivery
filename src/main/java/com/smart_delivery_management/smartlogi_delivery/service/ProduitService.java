@@ -1,19 +1,15 @@
 package com.smart_delivery_management.smartlogi_delivery.service;
 
-
-import com.smart_delivery_management.smartlogi_delivery.dto.ProduitDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import com.smart_delivery_management.smartlogi_delivery.entities.Produit;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProduitService {
-
-    ProduitDTO create(ProduitDTO dto);
-    ProduitDTO getById(String id);
-    Page<ProduitDTO> getAll(Pageable pageable);
-    ProduitDTO update(String id, ProduitDTO dto);
-    void delete(String id);
-    List<ProduitDTO> search(String keyword);
+    Produit save(Produit produit);
+    Optional<Produit> findById(String id);
+    List<Produit> findAll();
+    List<Produit> searchByNom(String nom);
+    List<Produit> findByCategorie(String categorie);
+    void deleteById(String id);
+    boolean existsById(String id);
 }
-

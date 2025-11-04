@@ -35,7 +35,6 @@ public interface ColisRepository extends JpaRepository<Colis, String>, JpaSpecif
 
     // Recherche par client expéditeur
     Page<Colis> findByClientExpediteurId(String clientId, Pageable pageable);
-    List<Colis> findByClientExpediteurId(String clientId);
 
     // Recherche par destinataire
     List<Colis> findByDestinataireId(String destinataireId);
