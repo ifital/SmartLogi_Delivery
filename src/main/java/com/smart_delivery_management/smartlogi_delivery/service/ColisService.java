@@ -5,7 +5,6 @@ import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteC
 import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,7 +28,6 @@ public interface ColisService {
 
     List<ColisDTO> getColisByLivreur(String livreurId);
 
-    @Transactional(readOnly = true)
     Page<ColisDTO> getColisByClient(String clientId, Pageable pageable);
 
     List<ColisDTO> getColisByDestinataire(String destinataireId);
