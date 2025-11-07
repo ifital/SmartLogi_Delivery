@@ -1,9 +1,9 @@
 package com.smart_delivery_management.smartlogi_delivery.service.impl;
 
 import com.smart_delivery_management.smartlogi_delivery.dto.*;
-import com.smart_delivery_management.smartlogi_delivery.entities.*;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteColis;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.*;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.PrioriteColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import com.smart_delivery_management.smartlogi_delivery.exception.ResourceNotFoundException;
 import com.smart_delivery_management.smartlogi_delivery.mapper.ColisMapper;
 import com.smart_delivery_management.smartlogi_delivery.repository.*;

@@ -1,7 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.controller;
 
 import com.smart_delivery_management.smartlogi_delivery.dto.*;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import com.smart_delivery_management.smartlogi_delivery.service.ColisService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.service;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.HistoriqueLivraison;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.HistoriqueLivraison;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,4 +1,4 @@
-package com.smart_delivery_management.smartlogi_delivery.entities;
+package com.smart_delivery_management.smartlogi_delivery.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,14 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "produit")
+@Table(name = "livreur")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Produit {
+public class Livreur {
 
     @Id
     @GeneratedValue(generator = "uuid")
@@ -21,15 +19,19 @@ public class Produit {
     @Column(name = "id", updatable = false, nullable = false, unique = true, length = 36)
     private String id;
 
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, length = 100)
     private String nom;
 
-    @Column(length = 100)
-    private String categorie;
+    @Column(nullable = false, length = 100)
+    private String prenom;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal poids;
+    @Column(nullable = false, length = 20)
+    private String telephone;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal prix;
+    @Column(length = 50)
+    private String vehicule;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone_assignee_id")
+    private Zone zoneAssignee;
 }

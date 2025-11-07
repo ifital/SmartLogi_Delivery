@@ -1,4 +1,4 @@
-package com.smart_delivery_management.smartlogi_delivery.entities;
+package com.smart_delivery_management.smartlogi_delivery.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ public class ColisProduit {
     private Produit produit;
 
     @Column(nullable = false)
-    private Integer quantite;
+    private int quantite;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal prix;

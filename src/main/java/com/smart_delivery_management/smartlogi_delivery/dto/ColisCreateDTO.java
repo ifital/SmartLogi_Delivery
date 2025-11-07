@@ -1,6 +1,6 @@
 package com.smart_delivery_management.smartlogi_delivery.dto;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.PrioriteColis;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,7 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.service;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.ColisProduit;
-import com.smart_delivery_management.smartlogi_delivery.entities.ColisProduitId;
+import com.smart_delivery_management.smartlogi_delivery.entity.ColisProduit;
+import com.smart_delivery_management.smartlogi_delivery.entity.ColisProduitId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

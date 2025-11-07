@@ -1,7 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.service.impl;
 
 import com.smart_delivery_management.smartlogi_delivery.dto.ClientExpediteurDTO;
-import com.smart_delivery_management.smartlogi_delivery.entities.ClientExpediteur;
+import com.smart_delivery_management.smartlogi_delivery.entity.ClientExpediteur;
 import com.smart_delivery_management.smartlogi_delivery.exception.ResourceNotFoundException;
 import com.smart_delivery_management.smartlogi_delivery.mapper.ClientExpediteurMapper;
 import com.smart_delivery_management.smartlogi_delivery.repository.ClientExpediteurRepository;

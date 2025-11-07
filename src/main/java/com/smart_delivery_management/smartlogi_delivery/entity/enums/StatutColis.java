@@ -1,4 +1,4 @@
-package com.smart_delivery_management.smartlogi_delivery.entities.enums;
+package com.smart_delivery_management.smartlogi_delivery.entity.enums;
 
 public enum StatutColis {
     CREE("Créé"),

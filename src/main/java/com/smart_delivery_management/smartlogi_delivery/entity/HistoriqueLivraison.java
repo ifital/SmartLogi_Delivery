@@ -1,6 +1,6 @@
-package com.smart_delivery_management.smartlogi_delivery.entities;
+package com.smart_delivery_management.smartlogi_delivery.entity;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.smart_delivery_management.smartlogi_delivery.controller;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.Produit;
+import com.smart_delivery_management.smartlogi_delivery.entity.Produit;
 import com.smart_delivery_management.smartlogi_delivery.service.ProduitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

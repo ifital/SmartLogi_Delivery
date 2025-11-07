@@ -1,8 +1,8 @@
 package com.smart_delivery_management.smartlogi_delivery.repository;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.Colis;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteColis;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.Colis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.PrioriteColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

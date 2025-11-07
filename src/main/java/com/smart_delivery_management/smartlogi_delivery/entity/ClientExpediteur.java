@@ -1,4 +1,4 @@
-package com.smart_delivery_management.smartlogi_delivery.entities;
+package com.smart_delivery_management.smartlogi_delivery.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-@Table(name = "livreur")
+@Table(name = "client_expediteur")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Livreur {
+public class ClientExpediteur {
 
     @Id
     @GeneratedValue(generator = "uuid")
@@ -25,13 +25,12 @@ public class Livreur {
     @Column(nullable = false, length = 100)
     private String prenom;
 
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
+
     @Column(nullable = false, length = 20)
     private String telephone;
 
-    @Column(length = 50)
-    private String vehicule;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "zone_assignee_id")
-    private Zone zoneAssignee;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String adresse;
 }

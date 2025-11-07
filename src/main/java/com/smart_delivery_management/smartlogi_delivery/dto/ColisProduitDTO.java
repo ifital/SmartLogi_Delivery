@@ -20,7 +20,7 @@ public class ColisProduitDTO {
 
     @NotNull(message = "La quantité est obligatoire")
     @Min(value = 1, message = "La quantité doit être au moins 1")
-    private Integer quantite;
+    private int quantite;
 
     @DecimalMin(value = "0.0", message = "Le prix doit être positif")
     private BigDecimal prix;

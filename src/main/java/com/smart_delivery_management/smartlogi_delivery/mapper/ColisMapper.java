@@ -2,7 +2,7 @@ package com.smart_delivery_management.smartlogi_delivery.mapper;
 
 import com.smart_delivery_management.smartlogi_delivery.dto.ColisCreateDTO;
 import com.smart_delivery_management.smartlogi_delivery.dto.ColisDTO;
-import com.smart_delivery_management.smartlogi_delivery.entities.Colis;
+import com.smart_delivery_management.smartlogi_delivery.entity.Colis;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

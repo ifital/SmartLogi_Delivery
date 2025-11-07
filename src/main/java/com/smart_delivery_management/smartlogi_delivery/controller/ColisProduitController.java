@@ -1,7 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.controller;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.ColisProduit;
-import com.smart_delivery_management.smartlogi_delivery.entities.ColisProduitId;
+import com.smart_delivery_management.smartlogi_delivery.entity.ColisProduit;
+import com.smart_delivery_management.smartlogi_delivery.entity.ColisProduitId;
 import com.smart_delivery_management.smartlogi_delivery.service.ColisProduitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.smart_delivery_management.smartlogi_delivery.service.impl;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.Zone;
+import com.smart_delivery_management.smartlogi_delivery.entity.Zone;
 import com.smart_delivery_management.smartlogi_delivery.repository.ZoneRepository;
 import com.smart_delivery_management.smartlogi_delivery.service.ZoneService;
 import lombok.RequiredArgsConstructor;

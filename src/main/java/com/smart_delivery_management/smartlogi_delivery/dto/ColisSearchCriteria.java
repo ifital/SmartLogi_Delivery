@@ -1,7 +1,7 @@
 package com.smart_delivery_management.smartlogi_delivery.dto;
 
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.PrioriteColis;
-import com.smart_delivery_management.smartlogi_delivery.entities.enums.StatutColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.PrioriteColis;
+import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
