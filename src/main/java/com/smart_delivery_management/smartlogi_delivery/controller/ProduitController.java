@@ -2,6 +2,12 @@ package com.smart_delivery_management.smartlogi_delivery.controller;
 
 import com.smart_delivery_management.smartlogi_delivery.entity.Produit;
 import com.smart_delivery_management.smartlogi_delivery.service.ProduitService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,82 +22,82 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/produits")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Produits", description = "Gestion des produits")
 public class ProduitController {
 
     private final ProduitService produitService;
 
     // ------------------- CREATE -------------------
+    @Operation(summary = "Créer un produit")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Produit créé avec succès"),
+            @ApiResponse(responseCode = "400", description = "Données invalides")
+    })
     @PostMapping
     public ResponseEntity<Produit> createProduit(@Valid @RequestBody Produit produit) {
-        log.info("Appel API: CREATE Produit nom={}, catégorie={}", produit.getNom(), produit.getCategorie());
         Produit saved = produitService.save(produit);
-        log.info("Produit créé avec succès: ID={}, nom={}, prix={}", saved.getId(), saved.getNom(), saved.getPrix());
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     // ------------------- READ (BY ID) -------------------
+    @Operation(summary = "Récupérer un produit par ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Produit> getProduitById(@PathVariable String id) {
-        log.info("Appel API: GET Produit ID={}", id);
+    public ResponseEntity<Produit> getProduitById(
+            @Parameter(description = "ID du produit") @PathVariable String id) {
+
         return produitService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    log.warn("Aucun produit trouvé avec ID={}", id);
-                    return ResponseEntity.notFound().build();
-                });
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // ------------------- READ ALL (Pagination) -------------------
+    @Operation(summary = "Récupérer tous les produits avec pagination")
     @GetMapping
     public ResponseEntity<Page<Produit>> getAllProduits(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: GET All Produits page={}, size={}", page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<Produit> result = produitService.findAll(pageable);
-        log.info("Nombre total de produits récupérés: {}", result.getTotalElements());
         return ResponseEntity.ok(result);
     }
 
     // ------------------- SEARCH PAR NOM -------------------
+    @Operation(summary = "Rechercher des produits par nom")
     @GetMapping("/search")
     public ResponseEntity<Page<Produit>> searchByNom(
             @RequestParam(required = false, defaultValue = "") String nom,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: SEARCH Produit par nom='{}'", nom);
         Pageable pageable = PageRequest.of(page, size);
         Page<Produit> result = produitService.searchByNom(nom, pageable);
-        log.info("Résultats: {} produits trouvés", result.getTotalElements());
         return ResponseEntity.ok(result);
     }
 
     // ------------------- SEARCH PAR CATÉGORIE -------------------
+    @Operation(summary = "Rechercher des produits par catégorie")
     @GetMapping("/categorie")
     public ResponseEntity<Page<Produit>> searchByCategorie(
             @RequestParam(required = false, defaultValue = "") String categorie,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: SEARCH Produit par catégorie='{}'", categorie);
         Pageable pageable = PageRequest.of(page, size);
         Page<Produit> result = produitService.findByCategorie(categorie, pageable);
-        log.info("Résultats: {} produits trouvés dans la catégorie='{}'", result.getTotalElements(), categorie);
         return ResponseEntity.ok(result);
     }
 
     // ------------------- DELETE -------------------
+    @Operation(summary = "Supprimer un produit par ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduit(@PathVariable String id) {
-        log.info("Appel API: DELETE Produit ID={}", id);
+    public ResponseEntity<Void> deleteProduit(
+            @Parameter(description = "ID du produit") @PathVariable String id) {
+
         if (!produitService.existsById(id)) {
-            log.warn("Tentative de suppression d'un produit inexistant ID={}", id);
             return ResponseEntity.notFound().build();
         }
         produitService.deleteById(id);
-        log.info("Produit supprimé: ID={}", id);
         return ResponseEntity.noContent().build();
     }
 }

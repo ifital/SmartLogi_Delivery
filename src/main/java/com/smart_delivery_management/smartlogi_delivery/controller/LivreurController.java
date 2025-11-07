@@ -2,6 +2,12 @@ package com.smart_delivery_management.smartlogi_delivery.controller;
 
 import com.smart_delivery_management.smartlogi_delivery.entity.Livreur;
 import com.smart_delivery_management.smartlogi_delivery.service.LivreurService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,45 +22,48 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/livreurs")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Livreurs", description = "Gestion des livreurs")
 public class LivreurController {
 
     private final LivreurService livreurService;
 
     // ------------------- CREATE -------------------
+    @Operation(summary = "Créer un livreur")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Livreur créé avec succès"),
+            @ApiResponse(responseCode = "400", description = "Données invalides")
+    })
     @PostMapping
     public ResponseEntity<Livreur> createLivreur(@Valid @RequestBody Livreur livreur) {
-        log.info("Appel API: CREATE Livreur nom={} {}", livreur.getNom(), livreur.getPrenom());
         Livreur saved = livreurService.save(livreur);
-        log.info("Livreur créé avec succès: ID={}", saved.getId());
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     // ------------------- READ (BY ID) -------------------
+    @Operation(summary = "Récupérer un livreur par ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Livreur> getLivreurById(@PathVariable String id) {
-        log.info("Appel API: GET Livreur ID={}", id);
+    public ResponseEntity<Livreur> getLivreurById(
+            @Parameter(description = "ID du livreur") @PathVariable String id) {
+
         return livreurService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    log.warn("Aucun livreur trouvé avec ID={}", id);
-                    return ResponseEntity.notFound().build();
-                });
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // ------------------- READ ALL (Pagination) -------------------
+    @Operation(summary = "Récupérer tous les livreurs avec pagination")
     @GetMapping
     public ResponseEntity<Page<Livreur>> getAllLivreurs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: GET All Livreurs page={}, size={}", page, size);
         Pageable pageable = PageRequest.of(page, size);
         Page<Livreur> result = livreurService.findAll(pageable);
-        log.info("Nombre total de livreurs récupérés: {}", result.getTotalElements());
         return ResponseEntity.ok(result);
     }
 
     // ------------------- SEARCH PAR NOM / PRENOM -------------------
+    @Operation(summary = "Rechercher des livreurs par nom ou prénom")
     @GetMapping("/search")
     public ResponseEntity<Page<Livreur>> searchByNomOrPrenom(
             @RequestParam(required = false, defaultValue = "") String nom,
@@ -62,51 +71,47 @@ public class LivreurController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: SEARCH Livreur nom='{}', prenom='{}'", nom, prenom);
         Pageable pageable = PageRequest.of(page, size);
         Page<Livreur> result = livreurService.searchByNomOrPrenom(nom, prenom, pageable);
-        log.info("Résultats: {} livreurs trouvés", result.getTotalElements());
         return ResponseEntity.ok(result);
     }
 
     // ------------------- LIVREURS PAR ZONE -------------------
+    @Operation(summary = "Récupérer les livreurs assignés à une zone")
     @GetMapping("/zone/{zoneId}")
     public ResponseEntity<Page<Livreur>> getLivreursByZone(
-            @PathVariable String zoneId,
+            @Parameter(description = "ID de la zone") @PathVariable String zoneId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: GET Livreurs par Zone ID={}", zoneId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Livreur> result = livreurService.findByZoneAssigneeId(zoneId, pageable);
-        log.info("Livreurs trouvés pour zone {}: {}", zoneId, result.getTotalElements());
         return ResponseEntity.ok(result);
     }
 
     // ------------------- LIVREURS PAR ZONE (requête personnalisée) -------------------
+    @Operation(summary = "Récupérer les livreurs d'une zone via une requête personnalisée")
     @GetMapping("/zone/custom/{zoneId}")
     public ResponseEntity<Page<Livreur>> getLivreursByZoneCustom(
-            @PathVariable String zoneId,
+            @Parameter(description = "ID de la zone") @PathVariable String zoneId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: GET Livreurs par Zone (custom) ID={}", zoneId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Livreur> result = livreurService.findLivreursByZone(zoneId, pageable);
-        log.info("Livreurs récupérés (custom) pour zone {}: {}", zoneId, result.getTotalElements());
         return ResponseEntity.ok(result);
     }
 
     // ------------------- DELETE -------------------
+    @Operation(summary = "Supprimer un livreur par ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLivreur(@PathVariable String id) {
-        log.info("Appel API: DELETE Livreur ID={}", id);
+    public ResponseEntity<Void> deleteLivreur(
+            @Parameter(description = "ID du livreur") @PathVariable String id) {
+
         if (!livreurService.existsById(id)) {
-            log.warn("Tentative de suppression d'un livreur inexistant ID={}", id);
             return ResponseEntity.notFound().build();
         }
         livreurService.deleteById(id);
-        log.info("Livreur supprimé: ID={}", id);
         return ResponseEntity.noContent().build();
     }
 }
