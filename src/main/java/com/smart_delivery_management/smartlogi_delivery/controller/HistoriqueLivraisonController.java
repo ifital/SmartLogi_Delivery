@@ -1,22 +1,26 @@
 package com.smart_delivery_management.smartlogi_delivery.controller;
 
+import com.smart_delivery_management.smartlogi_delivery.dto.HistoriqueLivraisonDTO;
 import com.smart_delivery_management.smartlogi_delivery.entity.HistoriqueLivraison;
 import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import com.smart_delivery_management.smartlogi_delivery.service.HistoriqueLivraisonService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/historique-livraisons")
@@ -34,20 +38,23 @@ public class HistoriqueLivraisonController {
             @ApiResponse(responseCode = "400", description = "Données invalides")
     })
     @PostMapping
-    public ResponseEntity<HistoriqueLivraison> createHistorique(
+    public ResponseEntity<HistoriqueLivraisonDTO> createHistorique(
             @RequestBody HistoriqueLivraison historique) {
 
         HistoriqueLivraison saved = historiqueLivraisonService.save(historique);
-        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+
+        HistoriqueLivraisonDTO dto = mapToDTO(saved);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
     // ------------------- READ (BY ID) -------------------
     @Operation(summary = "Récupérer un historique par ID")
     @GetMapping("/{id}")
-    public ResponseEntity<HistoriqueLivraison> getHistoriqueById(
+    public ResponseEntity<HistoriqueLivraisonDTO> getHistoriqueById(
             @Parameter(description = "ID de l'historique") @PathVariable String id) {
 
         return historiqueLivraisonService.findById(id)
+                .map(this::mapToDTO)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -55,39 +62,57 @@ public class HistoriqueLivraisonController {
     // ------------------- READ ALL (Pagination) -------------------
     @Operation(summary = "Récupérer tous les historiques de livraison avec pagination")
     @GetMapping
-    public ResponseEntity<Page<HistoriqueLivraison>> getAllHistoriques(
+    public ResponseEntity<Page<HistoriqueLivraisonDTO>> getAllHistoriques(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<HistoriqueLivraison> result = historiqueLivraisonService.findAll(pageable);
-        return ResponseEntity.ok(result);
+
+        List<HistoriqueLivraisonDTO> dtos = result.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+
+        Page<HistoriqueLivraisonDTO> dtoPage = new PageImpl<>(dtos, pageable, result.getTotalElements());
+        return ResponseEntity.ok(dtoPage);
     }
 
     // ------------------- HISTORIQUES PAR COLIS -------------------
     @Operation(summary = "Récupérer les historiques d'un colis par son ID")
     @GetMapping("/colis/{colisId}")
-    public ResponseEntity<Page<HistoriqueLivraison>> getByColisId(
+    public ResponseEntity<Page<HistoriqueLivraisonDTO>> getByColisId(
             @Parameter(description = "ID du colis") @PathVariable String colisId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<HistoriqueLivraison> result = historiqueLivraisonService.findByColisIdOrderByDateDesc(colisId, pageable);
-        return ResponseEntity.ok(result);
+
+        List<HistoriqueLivraisonDTO> dtos = result.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+
+        Page<HistoriqueLivraisonDTO> dtoPage = new PageImpl<>(dtos, pageable, result.getTotalElements());
+        return ResponseEntity.ok(dtoPage);
     }
 
     // ------------------- HISTORIQUES PAR STATUT -------------------
     @Operation(summary = "Récupérer les historiques par statut")
     @GetMapping("/statut")
-    public ResponseEntity<Page<HistoriqueLivraison>> getByStatut(
+    public ResponseEntity<Page<HistoriqueLivraisonDTO>> getByStatut(
             @Parameter(description = "Statut du colis") @RequestParam StatutColis statut,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<HistoriqueLivraison> result = historiqueLivraisonService.findByStatut(statut, pageable);
-        return ResponseEntity.ok(result);
+
+        List<HistoriqueLivraisonDTO> dtos = result.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+
+        Page<HistoriqueLivraisonDTO> dtoPage = new PageImpl<>(dtos, pageable, result.getTotalElements());
+        return ResponseEntity.ok(dtoPage);
     }
 
     // ------------------- DELETE -------------------
@@ -101,5 +126,15 @@ public class HistoriqueLivraisonController {
         }
         historiqueLivraisonService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // ------------------- MAPPING -------------------
+    private HistoriqueLivraisonDTO mapToDTO(HistoriqueLivraison historique) {
+        return new HistoriqueLivraisonDTO(
+                historique.getId(),
+                historique.getStatut(),
+                historique.getDateChangement(),
+                historique.getCommentaire()
+        );
     }
 }

@@ -1,5 +1,6 @@
 package com.smart_delivery_management.smartlogi_delivery.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smart_delivery_management.smartlogi_delivery.entity.enums.PrioriteColis;
 import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import jakarta.persistence.*;
@@ -73,6 +74,7 @@ public class Colis {
     private List<ColisProduit> produits = new ArrayList<>();
 
     @OneToMany(mappedBy = "colis", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<HistoriqueLivraison> historique = new ArrayList<>();
 
     @PrePersist

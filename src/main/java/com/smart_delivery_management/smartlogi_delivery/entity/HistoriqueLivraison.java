@@ -1,5 +1,6 @@
 package com.smart_delivery_management.smartlogi_delivery.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class HistoriqueLivraison {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "colis_id", nullable = false)
+    @JsonManagedReference
     private Colis colis;
 
     @Enumerated(EnumType.STRING)
