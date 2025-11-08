@@ -103,4 +103,4 @@ cd sdms
 
 ## Diagramme de classe
 
-![SmartLogi SDMS v1 (1)](https://github.com/user-attachments/assets/718e8806-2336-432d-bba1-cce15f1b5d9b)# Smart Delivery Management System (SDMS)
+![SmartLogi SDMS v1 (1)](https://github.com/user-attachments/assets/718e8806-2336-432d-bba1-cce15f1b5d9b)
