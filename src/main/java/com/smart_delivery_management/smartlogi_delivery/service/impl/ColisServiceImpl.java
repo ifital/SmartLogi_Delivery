@@ -98,6 +98,7 @@ public class ColisServiceImpl implements ColisService {
                 .orElseThrow(() -> new ResourceNotFoundException("Livreur introuvable"));
 
         colis.setLivreur(livreur);
+        colis.setStatut(StatutColis.COLLECTE);
         Colis savedColis = colisRepository.save(colis);
         addHistorique(savedColis, colis.getStatut(),
                 "Colis assigné au livreur: " + livreur.getNom() + " " + livreur.getPrenom());
