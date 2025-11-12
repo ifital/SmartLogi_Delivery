@@ -26,6 +26,8 @@ public interface ColisService {
 
     Page<ColisDTO> searchColis(ColisSearchCriteria criteria, Pageable pageable);
 
+    List<ColisDTO> getColisByLivreur(String livreurId);
+
     Page<ColisDTO> getColisByClient(String clientId, Pageable pageable);
 
     List<ColisDTO> getColisByDestinataire(String destinataireId);
