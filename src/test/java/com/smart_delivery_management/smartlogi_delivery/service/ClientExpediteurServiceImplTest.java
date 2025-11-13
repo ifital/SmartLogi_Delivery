@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-class ClientExpediteurServiceTest {
+class ClientExpediteurServiceImplTest {
 
     @Mock
     private ClientExpediteurRepository repository;
