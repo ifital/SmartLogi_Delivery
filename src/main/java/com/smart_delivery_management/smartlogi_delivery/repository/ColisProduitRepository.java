@@ -13,7 +13,6 @@ public interface ColisProduitRepository extends JpaRepository<ColisProduit, Coli
 
     Page<ColisProduit> findByColisId(String colisId, Pageable pageable);
     Page<ColisProduit> findByProduitId(String produitId, Pageable pageable);
-
     void deleteByColisId(String colisId);
 }
 
