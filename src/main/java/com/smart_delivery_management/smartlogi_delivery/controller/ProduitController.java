@@ -63,7 +63,6 @@ public class ProduitController {
     }
 
     // ------------------- SEARCH PAR NOM -------------------
-    @Operation(summary = "Rechercher des produits par nom")
     @GetMapping("/search")
     public ResponseEntity<Page<Produit>> searchByNom(
             @RequestParam(required = false, defaultValue = "") String nom,
@@ -76,7 +75,6 @@ public class ProduitController {
     }
 
     // ------------------- SEARCH PAR CATÉGORIE -------------------
-    @Operation(summary = "Rechercher des produits par catégorie")
     @GetMapping("/categorie")
     public ResponseEntity<Page<Produit>> searchByCategorie(
             @RequestParam(required = false, defaultValue = "") String categorie,

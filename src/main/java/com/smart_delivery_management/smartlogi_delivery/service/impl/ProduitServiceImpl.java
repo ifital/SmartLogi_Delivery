@@ -54,18 +54,38 @@ public class ProduitServiceImpl implements ProduitService {
     @Transactional(readOnly = true)
     public Page<Produit> searchByNom(String nom, Pageable pageable) {
         log.debug("Recherche paginée de produits par nom: {}", nom);
-        Page<Produit> result = produitRepository.findByNomContainingIgnoreCase(nom, pageable);
-        log.info("Produits trouvés contenant '{}': {}", nom, result.getTotalElements());
-        return result;
+
+        try {
+            if (nom == null || nom.trim().isEmpty()) {
+                log.info("Nom vide, récupération de tous les produits");
+                return produitRepository.findAll(pageable);
+            }
+            Page<Produit> result = produitRepository.findByNomContainingIgnoreCase(nom.trim(), pageable);
+            log.info("Produits trouvés contenant '{}': {}", nom, result.getTotalElements());
+            return result;
+        } catch (Exception e) {
+            log.error("Erreur lors de la recherche par nom: {}", nom, e);
+            throw new RuntimeException("Erreur lors de la recherche de produits par nom", e);
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<Produit> findByCategorie(String categorie, Pageable pageable) {
         log.debug("Recherche paginée de produits par catégorie: {}", categorie);
-        Page<Produit> result = produitRepository.findByCategorie(categorie, pageable);
-        log.info("Produits trouvés dans la catégorie '{}': {}", categorie, result.getTotalElements());
-        return result;
+
+        try {
+            if (categorie == null || categorie.trim().isEmpty()) {
+                log.info("Catégorie vide, récupération de tous les produits");
+                return produitRepository.findAll(pageable);
+            }
+            Page<Produit> result = produitRepository.findByCategorie(categorie.trim(), pageable);
+            log.info("Produits trouvés dans la catégorie '{}': {}", categorie, result.getTotalElements());
+            return result;
+        } catch (Exception e) {
+            log.error("Erreur lors de la recherche par catégorie: {}", categorie, e);
+            throw new RuntimeException("Erreur lors de la recherche de produits par catégorie", e);
+        }
     }
 
     @Override
