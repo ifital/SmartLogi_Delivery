@@ -80,7 +80,7 @@ L’application permettra de :
 - **Logging** : SLF4J
 - **Validation** : @Valid, @NotNull, @Size …
 - **Pagination & tri** : pour toutes les listes importantes
-- **Emails** : SMTP (bonus)
+- **Junit5 et Mockito** : pour les tests unitaires
 - **Configuration & outils** : YAML, Maven, Git/GitHub, Jira
 
 ### Contraintes et bonnes pratiques
@@ -104,3 +104,19 @@ cd sdms
 ## Diagramme de classe
 
 ![SmartLogi SDMS v1 (1)](https://github.com/user-attachments/assets/718e8806-2336-432d-bba1-cce15f1b5d9b)
+
+---
+
+
+## Couverture du code
+
+<img width="1911" height="501" alt="image" src="https://github.com/user-attachments/assets/9cd1b683-cbb7-46b6-9e42-b2a579c8214e" />
+
+---
+
+
+## les statistiques en SonarQube
+
+<img width="1891" height="708" alt="image" src="https://github.com/user-attachments/assets/8d04a1b2-d1a1-40c0-86be-89b4f567c8b7" />
+
+
