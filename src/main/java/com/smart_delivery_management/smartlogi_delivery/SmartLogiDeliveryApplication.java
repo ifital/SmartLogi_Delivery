@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SmartLogiDeliveryApplication {
+    public class SmartLogiDeliveryApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SmartLogiDeliveryApplication.class, args);
