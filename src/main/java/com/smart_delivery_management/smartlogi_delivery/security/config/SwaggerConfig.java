@@ -1,4 +1,4 @@
-package com.smart_delivery_management.smartlogi_delivery.config;
+package com.smart_delivery_management.smartlogi_delivery.security.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
