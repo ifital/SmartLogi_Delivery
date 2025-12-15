@@ -3,13 +3,14 @@ package com.smart_delivery_management.smartlogi_delivery.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "livreur")
+@Table(name = "livreurs")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @PrimaryKeyJoinColumn(name = "id")
 public class Livreur extends User {
 
