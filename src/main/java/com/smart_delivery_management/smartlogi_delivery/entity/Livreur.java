@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "livreurs")
+@Table(name = "livreur")
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -21,3 +21,4 @@ public class Livreur extends User {
     @JoinColumn(name = "zone_assignee_id")
     private Zone zoneAssignee;
 }
+

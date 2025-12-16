@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 004-create-livreur
+      id: 003-create-livreur
       author: smartlogi
       changes:
         - createTable:
@@ -13,21 +13,6 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: nom
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: prenom
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: telephone
-                  type: varchar(20)
-                  constraints:
-                    nullable: false
-              - column:
                   name: vehicule
                   type: varchar(50)
               - column:
@@ -35,8 +20,15 @@ databaseChangeLog:
                   type: varchar(36)
         - addForeignKeyConstraint:
             baseTableName: livreur
+            baseColumnNames: id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_livreur_user
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: livreur
             baseColumnNames: zone_assignee_id
-            constraintName: fk_livreur_zone
             referencedTableName: zone
             referencedColumnNames: id
+            constraintName: fk_livreur_zone
             onDelete: SET NULL

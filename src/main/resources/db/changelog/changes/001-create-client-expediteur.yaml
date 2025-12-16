@@ -12,29 +12,10 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-              - column:
-                  name: nom
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: prenom
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: email
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: telephone
-                  type: varchar(20)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: adresse
-                  type: text
-                  constraints:
-                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: client_expediteur
+            baseColumnNames: id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_client_expediteur_user
+            onDelete: CASCADE

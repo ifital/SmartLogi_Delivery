@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 000-create-users
+      author: smartlogi
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: nom
+                  type: varchar(100)
+              - column:
+                  name: prenom
+                  type: varchar(100)
+              - column:
+                  name: email
+                  type: varchar(100)
+                  constraints:
+                    unique: true
+              - column:
+                  name: telephone
+                  type: varchar(20)
+              - column:
+                  name: adresse
+                  type: text
+              - column:
+                  name: password
+                  type: varchar(255)
+              - column:
+                  name: role
+                  type: varchar(20)
