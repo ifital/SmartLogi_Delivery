@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,12 +30,11 @@ public class DestinataireController {
 
     // ------------------- CREATE -------------------
     @Operation(summary = "Créer un destinataire")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Destinataire créé avec succès"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
     @PostMapping
-    public ResponseEntity<Destinataire> createDestinataire(@Valid @RequestBody Destinataire destinataire) {
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
+    public ResponseEntity<Destinataire> createDestinataire(
+            @Valid @RequestBody Destinataire destinataire) {
+
         Destinataire saved = destinataireService.save(destinataire);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -42,62 +42,68 @@ public class DestinataireController {
     // ------------------- READ (BY ID) -------------------
     @Operation(summary = "Récupérer un destinataire par ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT','DESTINATAIRE','LIVREUR','ADMIN')")
     public ResponseEntity<Destinataire> getDestinataireById(
-            @Parameter(description = "ID du destinataire") @PathVariable String id) {
+            @PathVariable String id) {
 
         return destinataireService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // ------------------- READ ALL (Pagination) -------------------
     @Operation(summary = "Récupérer tous les destinataires avec pagination")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Destinataire>> getAllDestinataires(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Destinataire> result = destinataireService.findAll(pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(destinataireService.findAll(pageable));
     }
 
     // ------------------- SEARCH PAR NOM / PRENOM -------------------
     @Operation(summary = "Rechercher des destinataires par nom ou prénom")
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Destinataire>> searchByNomOrPrenom(
-            @Parameter(description = "Nom du destinataire") @RequestParam(required = false, defaultValue = "") String nom,
-            @Parameter(description = "Prénom du destinataire") @RequestParam(required = false, defaultValue = "") String prenom,
+            @RequestParam(defaultValue = "") String nom,
+            @RequestParam(defaultValue = "") String prenom,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Destinataire> result = destinataireService.searchByNomOrPrenom(nom, prenom, pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(
+                destinataireService.searchByNomOrPrenom(nom, prenom, pageable)
+        );
     }
 
     // ------------------- SEARCH PAR TÉLÉPHONE -------------------
     @Operation(summary = "Rechercher des destinataires par téléphone")
     @GetMapping("/telephone")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Destinataire>> findByTelephone(
-            @Parameter(description = "Numéro de téléphone") @RequestParam String telephone,
+            @RequestParam String telephone,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Destinataire> result = destinataireService.findByTelephone(telephone, pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(
+                destinataireService.findByTelephone(telephone, pageable)
+        );
     }
 
     // ------------------- DELETE -------------------
     @Operation(summary = "Supprimer un destinataire par ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDestinataire(
-            @Parameter(description = "ID du destinataire") @PathVariable String id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteDestinataire(@PathVariable String id) {
 
         if (!destinataireService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+
         destinataireService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

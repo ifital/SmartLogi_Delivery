@@ -2,11 +2,7 @@ package com.smart_delivery_management.smartlogi_delivery.controller;
 
 import com.smart_delivery_management.smartlogi_delivery.entity.Livreur;
 import com.smart_delivery_management.smartlogi_delivery.service.LivreurService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,43 +25,36 @@ public class LivreurController {
     private final LivreurService livreurService;
 
     // ------------------- CREATE -------------------
-    @Operation(summary = "Créer un livreur")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Livreur créé avec succès"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Livreur> createLivreur(@Valid @RequestBody Livreur livreur) {
         Livreur saved = livreurService.save(livreur);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     // ------------------- READ (BY ID) -------------------
-    @Operation(summary = "Récupérer un livreur par ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Livreur> getLivreurById(
-            @Parameter(description = "ID du livreur") @PathVariable String id) {
-
+    @PreAuthorize("hasRole('ADMIN') or @securityService.isLivreurOwner(#id)")
+    public ResponseEntity<Livreur> getLivreurById(@PathVariable String id) {
         return livreurService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // ------------------- READ ALL (Pagination) -------------------
-    @Operation(summary = "Récupérer tous les livreurs avec pagination")
+    // ------------------- READ ALL -------------------
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Livreur>> getAllLivreurs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Livreur> result = livreurService.findAll(pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(livreurService.findAll(pageable));
     }
 
-    // ------------------- SEARCH PAR NOM / PRENOM -------------------
-    @Operation(summary = "Rechercher des livreurs par nom ou prénom")
+    // ------------------- SEARCH -------------------
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Livreur>> searchByNomOrPrenom(
             @RequestParam(required = false, defaultValue = "") String nom,
             @RequestParam(required = false, defaultValue = "") String prenom,
@@ -72,42 +62,37 @@ public class LivreurController {
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Livreur> result = livreurService.searchByNomOrPrenom(nom, prenom, pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(livreurService.searchByNomOrPrenom(nom, prenom, pageable));
     }
 
     // ------------------- LIVREURS PAR ZONE -------------------
-    @Operation(summary = "Récupérer les livreurs assignés à une zone")
     @GetMapping("/zone/{zoneId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Livreur>> getLivreursByZone(
-            @Parameter(description = "ID de la zone") @PathVariable String zoneId,
+            @PathVariable String zoneId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Livreur> result = livreurService.findByZoneAssigneeId(zoneId, pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(livreurService.findByZoneAssigneeId(zoneId, pageable));
     }
 
-    // ------------------- LIVREURS PAR ZONE (requête personnalisée) -------------------
-    @Operation(summary = "Récupérer les livreurs d'une zone via une requête personnalisée")
+    // ------------------- LIVREURS PAR ZONE (CUSTOM) -------------------
     @GetMapping("/zone/custom/{zoneId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<Livreur>> getLivreursByZoneCustom(
-            @Parameter(description = "ID de la zone") @PathVariable String zoneId,
+            @PathVariable String zoneId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Livreur> result = livreurService.findLivreursByZone(zoneId, pageable);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(livreurService.findLivreursByZone(zoneId, pageable));
     }
 
     // ------------------- DELETE -------------------
-    @Operation(summary = "Supprimer un livreur par ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLivreur(
-            @Parameter(description = "ID du livreur") @PathVariable String id) {
-
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteLivreur(@PathVariable String id) {
         if (!livreurService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }

@@ -3,8 +3,6 @@ package com.smart_delivery_management.smartlogi_delivery.controller;
 import com.smart_delivery_management.smartlogi_delivery.dto.ClientExpediteurDTO;
 import com.smart_delivery_management.smartlogi_delivery.service.ClientExpediteurService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,91 +25,66 @@ public class ClientExpediteurController {
     private final ClientExpediteurService clientService;
 
     // --------------------- CREATE ---------------------
-    @Operation(summary = "Créer un client expéditeur", description = "Ajoute un nouveau client expéditeur dans le système")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Client créé avec succès"),
-            @ApiResponse(responseCode = "400", description = "Erreur de validation des données")
-    })
+    @Operation(summary = "Créer un client expéditeur")
     @PostMapping
-    public ResponseEntity<ClientExpediteurDTO> createClient(@Valid @RequestBody ClientExpediteurDTO dto) {
-        log.info("Appel API: CREATE Client avec email={}", dto.getEmail());
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
+    public ResponseEntity<ClientExpediteurDTO> createClient(
+            @Valid @RequestBody ClientExpediteurDTO dto) {
+
         ClientExpediteurDTO created = clientService.create(dto);
-        log.info("Client créé avec succès: ID={}, email={}", created.getId(), created.getEmail());
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     // --------------------- READ -----------------------
-    @Operation(summary = "Obtenir un client par ID", description = "Récupère les informations d’un client expéditeur via son ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Client trouvé"),
-            @ApiResponse(responseCode = "404", description = "Client non trouvé")
-    })
+    @Operation(summary = "Obtenir un client par ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public ResponseEntity<ClientExpediteurDTO> getClientById(@PathVariable String id) {
-        log.info("Appel API: GET Client par ID={}", id);
-        ClientExpediteurDTO dto = clientService.getById(id);
-        log.info("Client récupéré: ID={}, email={}", dto.getId(), dto.getEmail());
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(clientService.getById(id));
     }
 
-    @Operation(summary = "Lister tous les clients", description = "Renvoie la liste paginée de tous les clients expéditeurs")
-    @ApiResponse(responseCode = "200", description = "Liste de clients récupérée avec succès")
+    // --------------------- READ ALL -------------------
+    @Operation(summary = "Lister tous les clients")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ClientExpediteurDTO>> getAllClients(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: GET All Clients, page={}, size={}", page, size);
         Pageable pageable = PageRequest.of(page, size);
-        Page<ClientExpediteurDTO> clients = clientService.getAll(pageable);
-        log.info("Nombre de clients récupérés: {}", clients.getTotalElements());
-        return ResponseEntity.ok(clients);
+        return ResponseEntity.ok(clientService.getAll(pageable));
     }
 
     // --------------------- UPDATE ---------------------
-    @Operation(summary = "Mettre à jour un client", description = "Modifie les informations d’un client expéditeur existant")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Client mis à jour avec succès"),
-            @ApiResponse(responseCode = "404", description = "Client non trouvé")
-    })
+    @Operation(summary = "Mettre à jour un client")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT','ADMIN')")
     public ResponseEntity<ClientExpediteurDTO> updateClient(
             @PathVariable String id,
             @Valid @RequestBody ClientExpediteurDTO dto) {
 
-        log.info("Appel API: UPDATE Client ID={}", id);
-        ClientExpediteurDTO updated = clientService.update(id, dto);
-        log.info("Client mis à jour: ID={}, email={}", updated.getId(), updated.getEmail());
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(clientService.update(id, dto));
     }
 
     // --------------------- DELETE ---------------------
-    @Operation(summary = "Supprimer un client", description = "Supprime un client expéditeur par son identifiant")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Client supprimé avec succès"),
-            @ApiResponse(responseCode = "404", description = "Client non trouvé")
-    })
+    @Operation(summary = "Supprimer un client")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteClient(@PathVariable String id) {
-        log.info("Appel API: DELETE Client ID={}", id);
         clientService.delete(id);
-        log.info("Client supprimé avec succès: ID={}", id);
         return ResponseEntity.noContent().build();
     }
 
     // --------------------- SEARCH ---------------------
-    @Operation(summary = "Rechercher des clients", description = "Recherche des clients expéditeurs par mot-clé (nom, email, etc.)")
-    @ApiResponse(responseCode = "200", description = "Résultats de la recherche")
+    @Operation(summary = "Rechercher des clients")
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ClientExpediteurDTO>> searchClients(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        log.info("Appel API: SEARCH Clients, keyword='{}', page={}, size={}", keyword, page, size);
         Pageable pageable = PageRequest.of(page, size);
-        Page<ClientExpediteurDTO> results = clientService.search(keyword, pageable);
-        log.info("Nombre de clients trouvés: {}", results.getTotalElements());
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(clientService.search(keyword, pageable));
     }
 }

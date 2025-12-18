@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,31 +29,25 @@ public class ProduitController {
     private final ProduitService produitService;
 
     // ------------------- CREATE -------------------
-    @Operation(summary = "Créer un produit")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Produit créé avec succès"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Produit> createProduit(@Valid @RequestBody Produit produit) {
         Produit saved = produitService.save(produit);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
     // ------------------- READ (BY ID) -------------------
-    @Operation(summary = "Récupérer un produit par ID")
     @GetMapping("/{id}")
-    public ResponseEntity<Produit> getProduitById(
-            @Parameter(description = "ID du produit") @PathVariable String id) {
-
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENT','LIVREUR')")
+    public ResponseEntity<Produit> getProduitById(@PathVariable String id) {
         return produitService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // ------------------- READ ALL (Pagination) -------------------
-    @Operation(summary = "Récupérer tous les produits avec pagination")
+    // ------------------- READ ALL -------------------
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENT','LIVREUR')")
     public ResponseEntity<Page<Produit>> getAllProduits(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -64,6 +59,7 @@ public class ProduitController {
 
     // ------------------- SEARCH PAR NOM -------------------
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENT','LIVREUR')")
     public ResponseEntity<Page<Produit>> searchByNom(
             @RequestParam(required = false, defaultValue = "") String nom,
             @RequestParam(defaultValue = "0") int page,
@@ -76,6 +72,7 @@ public class ProduitController {
 
     // ------------------- SEARCH PAR CATÉGORIE -------------------
     @GetMapping("/categorie")
+    @PreAuthorize("hasAnyRole('ADMIN','CLIENT','LIVREUR')")
     public ResponseEntity<Page<Produit>> searchByCategorie(
             @RequestParam(required = false, defaultValue = "") String categorie,
             @RequestParam(defaultValue = "0") int page,
@@ -87,11 +84,9 @@ public class ProduitController {
     }
 
     // ------------------- DELETE -------------------
-    @Operation(summary = "Supprimer un produit par ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduit(
-            @Parameter(description = "ID du produit") @PathVariable String id) {
-
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteProduit(@PathVariable String id) {
         if (!produitService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }

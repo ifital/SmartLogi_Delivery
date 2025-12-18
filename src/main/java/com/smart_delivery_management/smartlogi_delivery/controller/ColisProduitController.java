@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Colis-Produit", description = "Gestion des associations entre colis et produits")
+@PreAuthorize("hasRole('ADMIN')")
 public class ColisProduitController {
 
     private final ColisProduitService colisProduitService;
@@ -34,6 +36,7 @@ public class ColisProduitController {
             @ApiResponse(responseCode = "400", description = "Données invalides")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ColisProduit> create(@RequestBody ColisProduit colisProduit) {
         log.info("Appel API: CREATE ColisProduit colisId={}, produitId={}",
                 colisProduit.getId().getColisId(), colisProduit.getId().getProduitId());

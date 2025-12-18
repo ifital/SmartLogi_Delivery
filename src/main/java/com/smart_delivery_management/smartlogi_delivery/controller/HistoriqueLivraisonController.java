@@ -5,9 +5,6 @@ import com.smart_delivery_management.smartlogi_delivery.entity.HistoriqueLivrais
 import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis;
 import com.smart_delivery_management.smartlogi_delivery.service.HistoriqueLivraisonService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/historique-livraisons")
@@ -33,35 +30,31 @@ public class HistoriqueLivraisonController {
 
     // ------------------- CREATE -------------------
     @Operation(summary = "Créer un historique de livraison")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Historique créé avec succès"),
-            @ApiResponse(responseCode = "400", description = "Données invalides")
-    })
     @PostMapping
+    @PreAuthorize("hasAnyRole('LIVREUR','ADMIN')")
     public ResponseEntity<HistoriqueLivraisonDTO> createHistorique(
             @RequestBody HistoriqueLivraison historique) {
 
         HistoriqueLivraison saved = historiqueLivraisonService.save(historique);
-
-        HistoriqueLivraisonDTO dto = mapToDTO(saved);
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(mapToDTO(saved), HttpStatus.CREATED);
     }
 
     // ------------------- READ (BY ID) -------------------
     @Operation(summary = "Récupérer un historique par ID")
     @GetMapping("/{id}")
-    public ResponseEntity<HistoriqueLivraisonDTO> getHistoriqueById(
-            @Parameter(description = "ID de l'historique") @PathVariable String id) {
+    @PreAuthorize("hasAnyRole('CLIENT','DESTINATAIRE','LIVREUR','ADMIN')")
+    public ResponseEntity<HistoriqueLivraisonDTO> getHistoriqueById(@PathVariable String id) {
 
         return historiqueLivraisonService.findById(id)
                 .map(this::mapToDTO)
                 .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    // ------------------- READ ALL (Pagination) -------------------
-    @Operation(summary = "Récupérer tous les historiques de livraison avec pagination")
+    // ------------------- READ ALL -------------------
+    @Operation(summary = "Récupérer tous les historiques (admin)")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<HistoriqueLivraisonDTO>> getAllHistoriques(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -71,59 +64,61 @@ public class HistoriqueLivraisonController {
 
         List<HistoriqueLivraisonDTO> dtos = result.stream()
                 .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .toList();
 
-        Page<HistoriqueLivraisonDTO> dtoPage = new PageImpl<>(dtos, pageable, result.getTotalElements());
-        return ResponseEntity.ok(dtoPage);
+        return ResponseEntity.ok(new PageImpl<>(dtos, pageable, result.getTotalElements()));
     }
 
     // ------------------- HISTORIQUES PAR COLIS -------------------
-    @Operation(summary = "Récupérer les historiques d'un colis par son ID")
+    @Operation(summary = "Récupérer l'historique d'un colis")
     @GetMapping("/colis/{colisId}")
+    @PreAuthorize("hasAnyRole('CLIENT','DESTINATAIRE','LIVREUR','ADMIN')")
     public ResponseEntity<Page<HistoriqueLivraisonDTO>> getByColisId(
-            @Parameter(description = "ID du colis") @PathVariable String colisId,
+            @PathVariable String colisId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<HistoriqueLivraison> result = historiqueLivraisonService.findByColisIdOrderByDateDesc(colisId, pageable);
+        Page<HistoriqueLivraison> result =
+                historiqueLivraisonService.findByColisIdOrderByDateDesc(colisId, pageable);
 
         List<HistoriqueLivraisonDTO> dtos = result.stream()
                 .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .toList();
 
-        Page<HistoriqueLivraisonDTO> dtoPage = new PageImpl<>(dtos, pageable, result.getTotalElements());
-        return ResponseEntity.ok(dtoPage);
+        return ResponseEntity.ok(new PageImpl<>(dtos, pageable, result.getTotalElements()));
     }
 
     // ------------------- HISTORIQUES PAR STATUT -------------------
     @Operation(summary = "Récupérer les historiques par statut")
     @GetMapping("/statut")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<HistoriqueLivraisonDTO>> getByStatut(
-            @Parameter(description = "Statut du colis") @RequestParam StatutColis statut,
+            @RequestParam StatutColis statut,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<HistoriqueLivraison> result = historiqueLivraisonService.findByStatut(statut, pageable);
+        Page<HistoriqueLivraison> result =
+                historiqueLivraisonService.findByStatut(statut, pageable);
 
         List<HistoriqueLivraisonDTO> dtos = result.stream()
                 .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .toList();
 
-        Page<HistoriqueLivraisonDTO> dtoPage = new PageImpl<>(dtos, pageable, result.getTotalElements());
-        return ResponseEntity.ok(dtoPage);
+        return ResponseEntity.ok(new PageImpl<>(dtos, pageable, result.getTotalElements()));
     }
 
     // ------------------- DELETE -------------------
-    @Operation(summary = "Supprimer un historique par ID")
+    @Operation(summary = "Supprimer un historique")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHistorique(
-            @Parameter(description = "ID de l'historique") @PathVariable String id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteHistorique(@PathVariable String id) {
 
         if (!historiqueLivraisonService.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+
         historiqueLivraisonService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
