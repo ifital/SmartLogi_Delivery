@@ -6,6 +6,7 @@ import com.smart_delivery_management.smartlogi_delivery.entity.enums.StatutColis
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface ColisService {
@@ -57,4 +58,8 @@ public interface ColisService {
     Page<ColisDTO> getColisByVille(String ville, Pageable pageable);
 
     Page<ColisDTO> getColisByLivreur(String livreurId, Pageable pageable);
+
+    public Page<ColisDTO> getColisByLivreurEmail(String email, Pageable pageable);
+
+    public ColisDTO updateStatutByLivreur(String colisId, StatutColis statut, String commentaire, String emailLivreur) throws AccessDeniedException;
 }

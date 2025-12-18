@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -283,4 +284,44 @@ public class ColisServiceImpl implements ColisService {
         historique.setCommentaire(commentaire);
         historiqueRepository.save(historique);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ColisDTO> getColisByLivreurEmail(String email, Pageable pageable) {
+        Livreur livreur = livreurRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Livreur introuvable"));
+
+        return colisRepository
+                .findByLivreurId(livreur.getId(), pageable)
+                .map(colisMapper::toDto);
+    }
+
+    @Override
+    public ColisDTO updateStatutByLivreur(
+            String colisId,
+            StatutColis statut,
+            String commentaire,
+            String emailLivreur
+    ) throws AccessDeniedException {
+        Colis colis = colisRepository.findById(colisId)
+                .orElseThrow(() -> new ResourceNotFoundException("Colis introuvable"));
+
+        Livreur livreur = livreurRepository.findByEmail(emailLivreur)
+                .orElseThrow(() -> new ResourceNotFoundException("Livreur introuvable"));
+
+        // 🔐 Sécurité métier
+        if (colis.getLivreur() == null ||
+                !colis.getLivreur().getId().equals(livreur.getId())) {
+            throw new AccessDeniedException("Ce colis ne vous est pas assigné");
+        }
+
+        colis.setStatut(statut);
+        Colis saved = colisRepository.save(colis);
+
+        addHistorique(saved, statut, commentaire);
+
+        return colisMapper.toDto(saved);
+    }
+
+
 }
