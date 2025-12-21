@@ -16,18 +16,20 @@ public class UserServiceImpl implements UserService {
     @Autowired private LivreurRepository livreurRepository;
     @Autowired private ClientExpediteurRepository clientRepository;
     @Autowired private DestinataireRepository destinataireRepository;
-    @Autowired private ZoneRepository zoneRepository;
     @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired private ZoneRepository zoneRepository;
 
     @Override
     public User register(RegisterRequest req) {
 
+        // Vérification si l'email existe déjà
         if (userRepository.findByEmail(req.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
 
         String hashed = passwordEncoder.encode(req.getPassword());
 
+        // ------------------ LIVREUR ------------------
         if (req.getRole() == Role.LIVREUR) {
             Livreur liv = new Livreur();
             liv.setNom(req.getNom());
@@ -42,13 +44,14 @@ public class UserServiceImpl implements UserService {
 
             if (req.getZoneAssigneeId() != null) {
                 Zone zone = zoneRepository.findById(req.getZoneAssigneeId())
-                        .orElseThrow();
+                        .orElseThrow(() -> new RuntimeException("Zone not found"));
                 liv.setZoneAssignee(zone);
             }
 
             return livreurRepository.save(liv);
         }
 
+        // ------------------ CLIENT ------------------
         if (req.getRole() == Role.CLIENT) {
             ClientExpediteur c = new ClientExpediteur();
             c.setNom(req.getNom());
@@ -61,6 +64,20 @@ public class UserServiceImpl implements UserService {
             return clientRepository.save(c);
         }
 
+        // ------------------ ADMIN ------------------
+        if (req.getRole() == Role.ADMIN) {
+            User admin = new User();
+            admin.setNom(req.getNom());
+            admin.setPrenom(req.getPrenom());
+            admin.setEmail(req.getEmail());
+            admin.setPassword(hashed);
+            admin.setTelephone(req.getTelephone());
+            admin.setAdresse(req.getAdresse());
+            admin.setRole(Role.ADMIN);
+            return userRepository.save(admin);
+        }
+
+        // ------------------ DESTINATAIRE (par défaut) ------------------
         Destinataire d = new Destinataire();
         d.setNom(req.getNom());
         d.setPrenom(req.getPrenom());

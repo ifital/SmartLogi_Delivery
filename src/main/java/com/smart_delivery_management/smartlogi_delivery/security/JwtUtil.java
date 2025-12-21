@@ -12,7 +12,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "SECRET_KEY_123456_SECRET_KEY_123456"; // 32 chars min
+    private static final String SECRET =
+            "SECRET_KEY_123456_SECRET_KEY_123456";
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
@@ -36,7 +37,7 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    public boolean validate(String token, UserDetails userDetails) {
-        return extractUsername(token).equals(userDetails.getUsername());
+    public boolean validate(String token, UserDetails user) {
+        return extractUsername(token).equals(user.getUsername());
     }
 }
