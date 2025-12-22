@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: smartlogi_postgres
+    environment:
+      POSTGRES_DB: SmartLogi_Delivery_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: latifi-2001
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: smartlogi_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/SmartLogi_Delivery_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: latifi-2001
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_LIQUIBASE_CHANGELOG: classpath:/db/changelog/db.changelog-master.yaml
+      SERVER_PORT: 8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
