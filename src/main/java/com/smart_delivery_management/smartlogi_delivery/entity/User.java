@@ -31,6 +31,11 @@ public class User implements UserDetails {
     private String adresse;
     private String password;
 
+    @Column(unique = true)
+    private String providerId;
+
+    private String provider; // GOOGLE, GITHUB...
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
