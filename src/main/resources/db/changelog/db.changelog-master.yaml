@@ -17,3 +17,5 @@ databaseChangeLog:
       file: db/changelog/changes/007-create-colis-produit.yaml
   - include:
       file: db/changelog/changes/008-create-historique-livraison.yaml
+  - include:
+      file: db/changelog/changes/009-add-oauth-columns.yaml

@@ -15,15 +15,23 @@ public class JwtUtil {
     private static final String SECRET =
             "SECRET_KEY_123456_SECRET_KEY_123456";
 
+    private static final long EXPIRATION = 86400000; // 24h
+
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
+    // ✅ Utilisé pour LOGIN CLASSIQUE
     public String generateToken(UserDetails user) {
+        return generateTokenFromEmail(user.getUsername());
+    }
+
+    // ✅ Utilisé pour OAUTH2
+    public String generateTokenFromEmail(String email) {
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

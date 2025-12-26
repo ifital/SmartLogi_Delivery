@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-add-oauth-columns
+      author: smartlogi
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: provider
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: provider_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
