@@ -8,7 +8,6 @@ import com.smart_delivery_management.smartlogi_delivery.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -20,11 +19,13 @@ import java.util.UUID;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public OAuth2SuccessHandler(JwtUtil jwtUtil, UserRepository userRepository) {
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public void onAuthenticationSuccess(
@@ -35,8 +36,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
 
-        // 🔹 Google → email direct
-        // 🔹 GitHub → email parfois null
         String email = oauth2User.getAttribute("email");
 
         if (email == null) {
@@ -44,14 +43,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             email = login + "@github.com";
         }
 
-        String finalEmail = email;
-        User user = userRepository.findByEmail(email)
+        final String finalEmail = email;
+
+        User user = userRepository.findByEmail(finalEmail)
                 .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setId(UUID.randomUUID().toString());
-                    newUser.setEmail(finalEmail);
-                    newUser.setRole(Role.CLIENT);
-                    return userRepository.save(newUser);
+                    User u = new User();
+                    u.setId(UUID.randomUUID().toString());
+                    u.setEmail(finalEmail);
+                    u.setRole(Role.CLIENT);
+                    return userRepository.save(u);
                 });
 
         String token = jwtUtil.generateTokenFromEmail(user.getEmail());

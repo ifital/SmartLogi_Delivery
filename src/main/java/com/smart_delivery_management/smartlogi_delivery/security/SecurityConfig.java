@@ -1,9 +1,8 @@
 package com.smart_delivery_management.smartlogi_delivery.security;
 
-import com.smart_delivery_management.smartlogi_delivery.OAuth2.OAuth2SuccessHandler;
 import com.smart_delivery_management.smartlogi_delivery.OAuth2.CustomOAuth2UserService;
+import com.smart_delivery_management.smartlogi_delivery.OAuth2.OAuth2SuccessHandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,25 +20,28 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    @Autowired
-    private CustomOAuth2UserService customOAuth2UserService;
+    public SecurityConfig(
+            JwtFilter jwtFilter,
+            CustomOAuth2UserService customOAuth2UserService,
+            OAuth2SuccessHandler oAuth2SuccessHandler
+    ) {
+        this.jwtFilter = jwtFilter;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+    }
 
-    @Autowired
-    private OAuth2SuccessHandler oAuth2SuccessHandler;
-
-    // ================= Password Encoder =================
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ================= Authentication Manager =================
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config
@@ -47,20 +49,16 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // ================= Security Filter Chain =================
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ❌ CSRF désactivé (API REST)
                 .csrf(csrf -> csrf.disable())
 
-                // 🔐 Stateless JWT
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // 🔓 Autorisations
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**",
@@ -72,7 +70,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // 🔑 OAuth2 Login (Google + GitHub)
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)
@@ -80,7 +77,6 @@ public class SecurityConfig {
                         .successHandler(oAuth2SuccessHandler)
                 );
 
-        // 🔐 JWT Filter
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
