@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
@@ -35,24 +35,24 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
 
+        // 🔹 Google → email direct
+        // 🔹 GitHub → email parfois null
         String email = oauth2User.getAttribute("email");
 
         if (email == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Email not provided by OAuth2 provider");
-            return;
+            String login = oauth2User.getAttribute("login");
+            email = login + "@github.com";
         }
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-
-        User user;
-        if (optionalUser.isPresent()) {
-            user = optionalUser.get();
-        } else {
-            user = new User();
-            user.setEmail(email);
-            user.setRole(Role.CLIENT); // ✅ ENUM
-            userRepository.save(user);
-        }
+        String finalEmail = email;
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setId(UUID.randomUUID().toString());
+                    newUser.setEmail(finalEmail);
+                    newUser.setRole(Role.CLIENT);
+                    return userRepository.save(newUser);
+                });
 
         String token = jwtUtil.generateTokenFromEmail(user.getEmail());
 

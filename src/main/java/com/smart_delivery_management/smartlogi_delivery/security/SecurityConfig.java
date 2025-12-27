@@ -42,7 +42,8 @@ public class SecurityConfig {
     // ================= Authentication Manager =================
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
+            AuthenticationConfiguration config
+    ) throws Exception {
         return config.getAuthenticationManager();
     }
 
@@ -51,7 +52,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ❌ CSRF désactivé (API REST stateless)
+                // ❌ CSRF désactivé (API REST)
                 .csrf(csrf -> csrf.disable())
 
                 // 🔐 Stateless JWT
@@ -62,22 +63,16 @@ public class SecurityConfig {
                 // 🔓 Autorisations
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/login",
-                                "/auth/register",
-                                "/auth/logout",
-
-                                // OAuth2
+                                "/auth/**",
                                 "/oauth2/**",
                                 "/login/**",
-
-                                // Swagger
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
 
-                // 🔑 OAuth2 Login Google
+                // 🔑 OAuth2 Login (Google + GitHub)
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)
