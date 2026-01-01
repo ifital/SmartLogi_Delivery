@@ -3,15 +3,12 @@ package com.smart_delivery_management.smartlogi_delivery.service;
 import com.smart_delivery_management.smartlogi_delivery.entity.Zone;
 import com.smart_delivery_management.smartlogi_delivery.repository.ZoneRepository;
 import com.smart_delivery_management.smartlogi_delivery.service.impl.ZoneServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ZoneServiceImplTest {
 
     @Mock
@@ -27,101 +25,86 @@ class ZoneServiceImplTest {
     @InjectMocks
     private ZoneServiceImpl zoneService;
 
-    private Zone zone;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        zone = new Zone("1", "Casablanca", "20000");
+    private Zone createZone() {
+        return new Zone(
+                "1",
+                "Zone Centre",
+                "75001"
+        );
     }
 
-    // ---------- SAVE ----------
     @Test
-    @DisplayName("Devrait sauvegarder une zone")
-    void testSave() {
+    void save_shouldSaveZone() {
+        Zone zone = createZone();
         when(zoneRepository.save(zone)).thenReturn(zone);
 
         Zone saved = zoneService.save(zone);
 
         assertThat(saved).isNotNull();
-        assertThat(saved.getNom()).isEqualTo("Casablanca");
-        verify(zoneRepository, times(1)).save(zone);
+        assertThat(saved.getNom()).isEqualTo("Zone Centre");
+        verify(zoneRepository).save(zone);
     }
 
-    // ---------- FIND BY ID ----------
     @Test
-    @DisplayName("Devrait récupérer une zone par ID")
-    void testFindById() {
+    void findById_shouldReturnZone() {
+        Zone zone = createZone();
         when(zoneRepository.findById("1")).thenReturn(Optional.of(zone));
 
-        Optional<Zone> found = zoneService.findById("1");
+        Optional<Zone> result = zoneService.findById("1");
 
-        assertThat(found).isPresent();
-        assertThat(found.get().getNom()).isEqualTo("Casablanca");
-        verify(zoneRepository, times(1)).findById("1");
+        assertThat(result).isPresent();
+        assertThat(result.get().getCodePostal()).isEqualTo("75001");
     }
 
-    // ---------- FIND ALL ----------
     @Test
-    @DisplayName("Devrait récupérer toutes les zones paginées")
-    void testFindAll() {
-        Page<Zone> page = new PageImpl<>(List.of(zone));
-        when(zoneRepository.findAll(PageRequest.of(0, 10))).thenReturn(page);
+    void findAll_shouldReturnPage() {
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<Zone> page = new PageImpl<>(List.of(createZone()));
+        when(zoneRepository.findAll(pageable)).thenReturn(page);
 
-        Page<Zone> result = zoneService.findAll(PageRequest.of(0, 10));
+        Page<Zone> result = zoneService.findAll(pageable);
 
         assertThat(result.getTotalElements()).isEqualTo(1);
-        verify(zoneRepository, times(1)).findAll(PageRequest.of(0, 10));
     }
 
-    // ---------- SEARCH BY NOM ----------
     @Test
-    @DisplayName("Devrait rechercher des zones par nom")
-    void testSearchByNom() {
-        Page<Zone> page = new PageImpl<>(List.of(zone));
-        when(zoneRepository.findByNomContainingIgnoreCase("casa", PageRequest.of(0, 10)))
-                .thenReturn(page);
+    void searchByNom_shouldReturnMatchingZones() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Zone> page = new PageImpl<>(List.of(createZone()));
+        when(zoneRepository.findByNomContainingIgnoreCase("centre", pageable)).thenReturn(page);
 
-        Page<Zone> result = zoneService.searchByNom("casa", PageRequest.of(0, 10));
+        Page<Zone> result = zoneService.searchByNom("centre", pageable);
 
         assertThat(result.getTotalElements()).isEqualTo(1);
-        verify(zoneRepository, times(1)).findByNomContainingIgnoreCase("casa", PageRequest.of(0, 10));
+        verify(zoneRepository).findByNomContainingIgnoreCase("centre", pageable);
     }
 
-    // ---------- FIND BY CODE POSTAL ----------
     @Test
-    @DisplayName("Devrait rechercher des zones par code postal")
-    void testFindByCodePostal() {
-        Page<Zone> page = new PageImpl<>(List.of(zone));
-        when(zoneRepository.findByCodePostal("20000", PageRequest.of(0, 10)))
-                .thenReturn(page);
+    void findByCodePostal_shouldReturnZones() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Zone> page = new PageImpl<>(List.of(createZone()));
+        when(zoneRepository.findByCodePostal("75001", pageable)).thenReturn(page);
 
-        Page<Zone> result = zoneService.findByCodePostal("20000", PageRequest.of(0, 10));
+        Page<Zone> result = zoneService.findByCodePostal("75001", pageable);
 
-        assertThat(result.getTotalElements()).isEqualTo(1);
-        verify(zoneRepository, times(1)).findByCodePostal("20000", PageRequest.of(0, 10));
+        assertThat(result.getContent()).hasSize(1);
     }
 
-    // ---------- DELETE ----------
     @Test
-    @DisplayName("Devrait supprimer une zone par ID")
-    void testDeleteById() {
+    void deleteById_shouldCallRepository() {
         doNothing().when(zoneRepository).deleteById("1");
 
         zoneService.deleteById("1");
 
-        verify(zoneRepository, times(1)).deleteById("1");
+        verify(zoneRepository).deleteById("1");
     }
 
-    // ---------- EXISTS BY ID ----------
     @Test
-    @DisplayName("Devrait vérifier l'existence d'une zone")
-    void testExistsById() {
+    void existsById_shouldReturnTrue() {
         when(zoneRepository.existsById("1")).thenReturn(true);
 
         boolean exists = zoneService.existsById("1");
 
         assertThat(exists).isTrue();
-        verify(zoneRepository, times(1)).existsById("1");
     }
 }
