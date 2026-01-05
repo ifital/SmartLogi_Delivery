@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "latifi2001/smartlogi-delivery"
+        DOCKER_IMAGE = "latifi2001/smartlogi_delivery-app"
         DOCKER_TAG = "${BUILD_NUMBER}"
     }
 
@@ -16,7 +16,6 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                echo 'Build de l’image Docker (multi-stage Maven)...'
                 sh """
                     docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
                     docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
