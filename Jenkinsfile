@@ -16,9 +16,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh """
-                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
-                    docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                bat """
+                    docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .
+                    docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest
                 """
             }
         }
@@ -30,10 +30,10 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh """
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        docker push ${DOCKER_IMAGE}:latest
+                    bat """
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker push %DOCKER_IMAGE%:%DOCKER_TAG%
+                        docker push %DOCKER_IMAGE%:latest
                         docker logout
                     """
                 }
@@ -43,7 +43,7 @@ pipeline {
 
     post {
         success {
-            echo "Image Docker publiée : ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            echo "Image Docker publiée : %DOCKER_IMAGE%:%DOCKER_TAG%"
         }
         failure {
             echo "Échec du pipeline"
