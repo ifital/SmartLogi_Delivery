@@ -15,35 +15,27 @@ pipeline {
         }
 
         stage('Docker Build') {
+            when {
+                expression { false }
+            }
             steps {
-                bat """
-                    docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% .
-                    docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest
-                """
+                echo "Docker Build désactivé"
             }
         }
 
         stage('Docker Push') {
+            when {
+                expression { false }
+            }
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-                    bat """
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                        docker push %DOCKER_IMAGE%:%DOCKER_TAG%
-                        docker push %DOCKER_IMAGE%:latest
-                        docker logout
-                    """
-                }
+                echo "Docker Push désactivé"
             }
         }
     }
 
     post {
         success {
-            echo "Image Docker publiée : %DOCKER_IMAGE%:%DOCKER_TAG%"
+            echo "Pipeline exécuté sans Docker"
         }
         failure {
             echo "Échec du pipeline"
